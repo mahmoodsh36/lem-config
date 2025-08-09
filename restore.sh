@@ -1,2 +1,3 @@
 #!/usr/bin/env sh
-ln -sf $PWD ~/.lem
+mkdir -p ~/.lem/
+ln -sf $PWD/* ~/.lem/
