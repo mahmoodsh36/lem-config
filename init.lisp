@@ -1,7 +1,5 @@
 (defpackage :lem-user
-  ;; (:use :cl :lem :lem-elisp-mode :lem-sdl2 :lem/buffer/internal :lem-sdl2/graphics)
-  (:use :cl :lem :lem-elisp-mode :lem/buffer/internal :lem-core)
-  )
+  (:use :cl :lem :lem-elisp-mode :lem/buffer/internal :lem-core))
 (in-package :lem-user)
 
 ;; so we dont have to use `define-command' explicitly
@@ -166,15 +164,6 @@
   (unless (alive-process-p)
     (editor-error "Python process doesn't exist."))
   (lem-process:process-send-input *process* (points-to-string start end)))
-
-(defun test50 ()
-  (let ((image (sdl2-image:load-image "/home/mahmooz/dl/icon-for-lem.png")))
-    (insert-string
-     (buffer-point (current-buffer))
-     "test"
-     :attribute (lem:make-attribute :plist (list :image image)))
-    (map () #'lem:stop-timer lem/common/timer::*idle-timer-list*)
-    ))
 
 (define-command my-find-definition () ()
   (lem-lisp-mode/internal::check-connection)
