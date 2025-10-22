@@ -10,7 +10,7 @@
        ',name))) ;; return the generated command name
 
 ;; start in vi-mode
-;; (lem-vi-mode:vi-mode)
+(lem-vi-mode:vi-mode)
 
 (setf lem-core::*default-prompt-gravity* :bottom-display)
 (setf lem/prompt-window::*prompt-completion-window-gravity* :horizontally-above-window)
@@ -181,7 +181,7 @@
 ;; set font
 ;; (lem-if:set-font-name "iosevka")
 ;; (lem-core/commands/font::font-size-set 15)
-(lem-core/commands/font::font-size-set 30)
+(lem-core/commands/font::font-size-set 13)
 
 ;; lisp mode keybindings
 (define-key lem-lisp-mode/eval::*lisp-mode-keymap*
@@ -202,10 +202,15 @@
   (when (string= (asdf:component-name system) "organ-mode")
     (let ((pkg (find-package "ORGAN")))
       (when pkg
+        ;; (setf (symbol-value (intern "*ORGAN-FILES*" pkg))
+        ;;       '((:path ("/home/mahmooz/brain/notes/")
+        ;;          :regex ".*\\.org"
+        ;;          :format "org-mode")))
         (setf (symbol-value (intern "*ORGAN-FILES*" pkg))
-              '((:path ("/home/mahmooz/brain/notes/")
+              '((:path ("/home/mahmooz/work/cltpt/tests/test2.org")
                  :regex ".*\\.org"
-                 :format "org-mode")))))))
+                 :format "org-mode")))
+        ))))
 
 ;; (pushnew :quicklisp *features*)
 
@@ -214,25 +219,31 @@
 ;;   (when (probe-file quicklisp-init)
 ;;     (load quicklisp-init)))
 
-(setf lem-extension-manager:*packages-directory*
-      (merge-pathnames ".lem/packages/" (user-homedir-pathname)))
+;; (setf lem-extension-manager:*packages-directory*
+;;       (merge-pathnames ".lem/packages/" (user-homedir-pathname)))
 
-(lem-extension-manager:lem-use-package
- "organ-mode"
- :source (:type :git
-          :url "https://github.com/mahmoodsh36/organ-mode")
- :force t
- :dependencies (
-                ;; ("clingon"
-                ;;  :source (:type :git
-                ;;           :url "https://github.com/dnaeon/clingon"))
-                ;; ("cltpt"
-                ;;  :source (:type :git
-                ;;           :url "https://github.com/mahmoodsh36/cltpt"))
-                ))
+;; (lem-extension-manager:lem-use-package
+;;  "organ-mode"
+;;  :source (:type :git
+;;           :url "https://github.com/mahmoodsh36/organ-mode")
+;;  :force t
+;;  :dependencies (
+;;                 ;; ("clingon"
+;;                 ;;  :source (:type :git
+;;                 ;;           :url "https://github.com/dnaeon/clingon"))
+;;                 ;; ("cltpt"
+;;                 ;;  :source (:type :git
+;;                 ;;           :url "https://github.com/mahmoodsh36/cltpt"))
+;;                 ))
 
 ;; (let* ((asdf:*central-registry*
 ;;          (union (lem-extension-manager::packages-list)
 ;;                 asdf:*central-registry*
 ;;                 :test #'equal)))
 ;;   (asdf:load-system :organ-mode))
+
+;; (defun outline-test ()
+;;   (lem-outline::open-outline-internal
+;;    '(("Root Node" ("Child 1" ("Grandchild A" "Grandchild B") "Child 2")
+;;       ("Another Root" "Simple Child" ("Complex Child" "Nested Item"))
+;;       ("Final Root" ("Deep" ("Deeper" ("Deepest"))))))))
