@@ -2,6 +2,6 @@
   :author "mahmood sheikh"
   :license ""
   :description "my lem config."
-  :depends-on ("cltpt")
+  :depends-on ("cltpt" "organ-mode")
   :components ((:file "main")
                (:file "organ")))
