@@ -187,9 +187,16 @@
 (lem-core/commands/font::font-size-set 13)
 
 ;; lisp mode keybindings
-(define-key lem-lisp-mode/eval::*lisp-mode-keymap*
-  "Space c"
-  'lem-lisp-mode/eval::lisp-eval-buffer)
+;; (define-key lem-lisp-mode/eval::*lisp-mode-keymap*
+;;   "Space c"
+;;   'lem-lisp-mode/eval::lisp-eval-buffer)
+
+;; this is how we do it to prevent the keybinding from being activated in insert mode
+(defvar *lisp-vi-normal-keymap* (lem:make-keymap :description '*lisp-vi-normal-keymap*))
+(lem:define-key *lisp-vi-normal-keymap* "Space c" 'lem-lisp-mode:lisp-eval-defun)
+(defmethod lem-vi-mode/core:mode-specific-keymaps ((mode lem-lisp-mode:lisp-mode))
+  (when (typep (lem-vi-mode/core:current-state) 'lem-vi-mode/states:normal)
+    (list *lisp-vi-normal-keymap*)))
 
 (led-key
  "l"
