@@ -89,14 +89,6 @@
       (concatenate 'string "C-' " key)
     command))
 
-;; show completions in minibuffer instantly
-;; (add-hook *prompt-after-activate-hook*
-;;           (lambda ()
-;;             (call-command 'lem/prompt-window::prompt-completion nil)))
-;; (add-hook *prompt-deactivate-hook*
-;;           (lambda ()
-;;             (lem/completion-mode:completion-end)))
-
 (led-key "x" 'lem-lisp-mode/eval::lisp-eval-defun)
 (led-key "s" 'lem-lisp-mode/eval::lisp-eval-string)
 
@@ -251,38 +243,4 @@
 ;;   ("b" 'organ-next-block)
 ;;   ("B" 'organ-prev-block))
 
-;; (pushnew :quicklisp *features*)
-
-;; (let ((quicklisp-init (merge-pathnames "quicklisp/setup.lisp"
-;;                                        (user-homedir-pathname))))
-;;   (when (probe-file quicklisp-init)
-;;     (load quicklisp-init)))
-
-;; (setf lem-extension-manager:*packages-directory*
-;;       (merge-pathnames ".lem/packages/" (user-homedir-pathname)))
-
-;; (lem-extension-manager:lem-use-package
-;;  "organ-mode"
-;;  :source (:type :git
-;;           :url "https://github.com/mahmoodsh36/organ-mode")
-;;  :force t
-;;  :dependencies (
-;;                 ;; ("clingon"
-;;                 ;;  :source (:type :git
-;;                 ;;           :url "https://github.com/dnaeon/clingon"))
-;;                 ;; ("cltpt"
-;;                 ;;  :source (:type :git
-;;                 ;;           :url "https://github.com/mahmoodsh36/cltpt"))
-;;                 ))
-
-;; (let* ((asdf:*central-registry*
-;;          (union (lem-extension-manager::packages-list)
-;;                 asdf:*central-registry*
-;;                 :test #'equal)))
-;;   (asdf:load-system :organ-mode))
-
-;; (defun outline-test ()
-;;   (lem-outline::open-outline-internal
-;;    '(("Root Node" ("Child 1" ("Grandchild A" "Grandchild B") "Child 2")
-;;       ("Another Root" "Simple Child" ("Complex Child" "Nested Item"))
-;;       ("Final Root" ("Deep" ("Deeper" ("Deepest"))))))))
+(setf *automatic-tab-completion* t)
