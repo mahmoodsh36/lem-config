@@ -77,6 +77,7 @@
 (define-key lem-vi-mode:*insert-keymap*
   "C-h"
   *help-keymap*)
+;; (undefine-key lem-vi-mode:*insert-keymap* "C-h")
 (define-key lem-vi-mode:*normal-keymap*
   "Space w"
   *window-keymap*)
@@ -120,7 +121,6 @@
       (lem/common/history:add-history (lem/prompt-window::prompt-window-history (lem/prompt-window::current-prompt-window)) input)
       (error 'lem/prompt-window::execute-condition :input input))))
 
-;; (undefine-key lem/completion-mode::*completion-mode-keymap* "Return")
 (define-keys lem/completion-mode::*completion-mode-keymap*
   ("Backspace" 'completion-backspace)
   ("Return" (cmd
