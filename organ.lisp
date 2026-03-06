@@ -1,7 +1,5 @@
 (in-package :lem-user)
 
-(log:info "got here123")
-
 (defun from-work (path)
   (concatenate 'string
                (sb-ext:posix-getenv "WORK_DIR")
@@ -26,6 +24,14 @@
                    "cltpt/tests/")))
          :glob "*.org"
          :format "org-mode")))
+
+(led-key
+ "E"
+ (cmd
+  (find-file
+   (format nil
+           "~A/cltpt/tests/test.org"
+           (sb-ext:posix-getenv "WORK_DIR")))))
 
 ;; (defmethod asdf:perform :after ((op asdf:load-op)
 ;;                                 (system asdf:system))

@@ -4,4 +4,5 @@
   :description "my lem config."
   :depends-on ("cltpt" "organ-mode")
   :components ((:file "main")
-               (:file "organ")))
+               (:file "organ")
+               (:file "theme")))
