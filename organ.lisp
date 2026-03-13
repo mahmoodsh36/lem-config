@@ -1,4 +1,4 @@
-(in-package :lem-user)
+(in-package :lemetnal)
 
 (defun from-work (path)
   (concatenate 'string

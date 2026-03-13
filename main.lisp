@@ -1,7 +1,7 @@
-(defpackage :lem-user
+(defpackage :lemetnal
   (:use :cl :lem :lem-elisp-mode :lem/buffer/internal :lem-core))
 
-(in-package :lem-user)
+(in-package :lemetnal)
 
 ;; so we dont have to use `define-command' explicitly
 (defmacro cmd (&body body)
@@ -242,5 +242,9 @@
 ;;   ("C" 'organ-prev-src-block)
 ;;   ("b" 'organ-next-block)
 ;;   ("B" 'organ-prev-block))
+
+(define-command change-in-test () ()
+  (lemetnal/utils:change-in-pair '(cltpt/combinator:pair "(%" "%)")))
+(define-key lem-vi-mode:*normal-keymap* "c i p" 'change-in-test)
 
 (setf *automatic-tab-completion* t)

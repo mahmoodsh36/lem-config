@@ -1,4 +1,4 @@
-(in-package :lem-user)
+(in-package :lemetnal)
 
 (lem:define-color-theme "metnal-warm" ("lem-default")
   (:display-background-mode :dark)
