@@ -103,6 +103,8 @@
 (led-key "b k" 'my-kill-current-buffer)
 (led-key "b K" 'my-kill-current-buffer-and-window)
 
+(led-key "d d" 'lem/directory-mode::find-file-directory)
+
 (define-key lem-vi-mode:*normal-keymap* "g d" 'lem/language-mode::find-definitions)
 
 ;; update completion after backspace
