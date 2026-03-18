@@ -115,14 +115,6 @@
       (lem/completion-mode::continue-completion
        lem/completion-mode::*completion-context*))))
 
-;; accept current prompt completion entry without trying to complete
-(define-command prompt-execute-auto-accept () ()
-  (let ((input (lem/prompt-window::get-input-string)))
-    (when (or (null (lem/prompt-window::prompt-window-existing-test-function (lem/prompt-window::current-prompt-window)))
-              (funcall (lem/prompt-window::prompt-window-existing-test-function (lem/prompt-window::current-prompt-window)) input))
-      (lem/common/history:add-history (lem/prompt-window::prompt-window-history (lem/prompt-window::current-prompt-window)) input)
-      (error 'lem/prompt-window::execute-condition :input input))))
-
 (define-keys lem/completion-mode::*completion-mode-keymap*
   ("Backspace" 'completion-backspace)
   ("Return" (cmd
@@ -200,6 +192,8 @@
                         "/cltpt/")
            asdf:*central-registry*
            :test #'equal)
+  (remhash "cltpt" asdf/system-registry:*immutable-systems*)
+  (asdf:clear-system "cltpt")
   (let ((uiop:*compile-file-failure-behaviour* :warn))
     (handler-bind ((error
                      (lambda (c)
@@ -212,6 +206,8 @@
                         "/organ-mode/")
            asdf:*central-registry*
            :test #'equal)
+  (remhash "organ-mode" asdf/system-registry:*immutable-systems*)
+  (asdf:clear-system "organ-mode")
   (let ((uiop:*compile-file-failure-behaviour* :warn))
     (handler-bind ((error
                      (lambda (c)
