@@ -5,5 +5,6 @@
   :depends-on ("cltpt" "organ-mode")
   :components ((:file "utils")
                (:file "main")
+               (:file "vi")
                (:file "organ")
                (:file "theme")))
