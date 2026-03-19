@@ -243,6 +243,6 @@
 
 (define-command change-in-test () ()
   (lemetnal/utils:change-in-pair '(cltpt/combinator:pair "(%" "%)")))
-(define-key lem-vi-mode:*normal-keymap* "c i p" 'change-in-test)
+;; (define-key lem-vi-mode:*normal-keymap* "c i p" 'change-in-test)
 
 (setf *automatic-tab-completion* t)

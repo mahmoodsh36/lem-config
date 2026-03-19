@@ -16,14 +16,14 @@
          :glob "*.org"
          :format "org-mode")))
 
-(setf organ:*organ-files*
-      `((:path (,(cltpt/file-utils:as-dir-path
-                  (cltpt/file-utils:join-paths
-                   (or (sb-ext:posix-getenv "WORK_DIR")
-                       (error "couldnt get BRAIN_DIR env var"))
-                   "cltpt/tests/")))
-         :glob "*.org"
-         :format "org-mode")))
+;; (setf organ:*organ-files*
+;;       `((:path (,(cltpt/file-utils:as-dir-path
+;;                   (cltpt/file-utils:join-paths
+;;                    (or (sb-ext:posix-getenv "WORK_DIR")
+;;                        (error "couldnt get BRAIN_DIR env var"))
+;;                    "cltpt/tests/")))
+;;          :glob "*.org"
+;;          :format "org-mode")))
 
 (led-key
  "E"
@@ -54,3 +54,8 @@
 ;;                 ,(from-work "cltpt/tests/test.org"))
 ;;          :regex ".*\\.org"
 ;;          :format "org-mode")))
+
+
+(led-key
+ "r"
+ organ:*organ-keymap*)
