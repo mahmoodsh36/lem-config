@@ -92,7 +92,7 @@
 
 ;; lisp mode vi integration
 (defvar *lisp-vi-normal-keymap* (lem:make-keymap :description '*lisp-vi-normal-keymap*))
-(lem:define-key *lisp-vi-normal-keymap* "Space c" 'lem-lisp-mode/eval:lisp-eval-buffer)
+(lem:define-key *lisp-vi-normal-keymap* "Space c" 'lem-lisp-mode/eval::lisp-eval-buffer)
 (defmethod lem-vi-mode/core:mode-specific-keymaps ((mode lem-lisp-mode:lisp-mode))
   (when (typep (lem-vi-mode/core:current-state) 'lem-vi-mode/states:normal)
     (list *lisp-vi-normal-keymap*)))
