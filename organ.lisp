@@ -2,7 +2,7 @@
 
 (defun from-work (path)
   (concatenate 'string
-               (sb-ext:posix-getenv "WORK_DIR")
+               (my-getenv "WORK_DIR")
                "/"
                path))
 
@@ -10,7 +10,7 @@
 (setf organ:*organ-files*
       `((:path (,(cltpt/file-utils:as-dir-path
                   (cltpt/file-utils:join-paths
-                   (or (sb-ext:posix-getenv "BRAIN_DIR")
+                   (or (my-getenv "BRAIN_DIR")
                        (error "couldnt get BRAIN_DIR env var"))
                    "notes")))
          :glob "*.org"
@@ -31,7 +31,7 @@
   (find-file
    (format nil
            "~A/cltpt/tests/test.org"
-           (sb-ext:posix-getenv "WORK_DIR")))))
+           (my-getenv "WORK_DIR")))))
 
 ;; (defmethod asdf:perform :after ((op asdf:load-op)
 ;;                                 (system asdf:system))

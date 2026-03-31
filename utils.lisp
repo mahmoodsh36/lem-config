@@ -1,6 +1,6 @@
 (defpackage :lemetnal/utils
   (:use :cl)
-  (:export :find-nearest-rule-match :change-in-pair :pair-inner-offsets))
+  (:export :find-nearest-rule-match :change-in-pair :pair-inner-offsets :my-getenv))
 
 (in-package :lemetnal/utils)
 
@@ -73,3 +73,30 @@ e.g. '(cltpt/combinator:pair \"(\" \")\")."
       (lem:move-point
        (lem:current-point)
        (organ/utils:char-offset-to-point (lem:current-buffer) inner-start)))))
+
+(defun my-getenv (var-name)
+  "get environment variable VAR-NAME falling back to reading from a login zsh shell.
+first tries sb-ext:posix-getenv. if that returns nil or empty string, tries HOME as fallback
+for home-directory-related vars. if still empty, executes 'zsh -l -c \"echo \\$VAR-NAME\"' and returns the output."
+  (let ((value (sb-ext:posix-getenv var-name)))
+    (when (and value (not (string= value "")))
+      (return-from my-getenv value)))
+  ;; last resort: try zsh login shell
+  (handler-case
+      (let* ((command (format nil "zsh -l -c 'echo $~A'" var-name))
+             (output (with-output-to-string (stream)
+                       (uiop:run-program command :output stream :error-output :interactive)))
+             (trimmed (string-trim '(#\newline #\return #\space) output)))
+        (if (and trimmed (not (string= trimmed "")))
+            trimmed
+            ;; if zsh also empty, try HOME from zsh as final fallback
+            (when (search "HOME" var-name)
+              (let* ((home-command "zsh -l -c 'echo $HOME'")
+                     (home-output (with-output-to-string (stream)
+                                    (uiop:run-program home-command
+                                                      :output stream
+                                                      :error-output :interactive))))
+                (string-trim '(#\newline #\return #\space) home-output)))))
+    (error (c)
+      (format *error-output* "could not get ~A: ~A~%" var-name c)
+      nil)))

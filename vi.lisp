@@ -51,7 +51,7 @@
 ;; Helper for cltpt and organ reloading
 (define-command reload-config-systems () ()
   (pushnew (concatenate 'string
-                        (sb-ext:posix-getenv "WORK_DIR")
+                        (my-getenv "WORK_DIR")
                         "/cltpt/")
            asdf:*central-registry*
            :test #'equal)
@@ -65,7 +65,7 @@
                          (when r (invoke-restart r))))))
       (asdf:load-system "cltpt" :force t)))
   (pushnew (concatenate 'string
-                        (sb-ext:posix-getenv "WORK_DIR")
+                        (my-getenv "WORK_DIR")
                         "/organ-mode/")
            asdf:*central-registry*
            :test #'equal)

@@ -1,5 +1,5 @@
 (defpackage :lemetnal
-  (:use :cl :lem :lem-elisp-mode :lem/buffer/internal :lem-core))
+  (:use :cl :lem :lem-elisp-mode :lem/buffer/internal :lem-core :lemetnal/utils))
 
 (in-package :lemetnal)
 
@@ -88,7 +88,7 @@
 ;; keys to find files
 (define-command find-config () ()
   (find-file (concatenate 'string
-                          (sb-ext:posix-getenv "HOME_DIR")
+                          (my-getenv "HOME_DIR")
                           "/.lem/init.lisp")))
 
 (define-command my-find-definition () ()
