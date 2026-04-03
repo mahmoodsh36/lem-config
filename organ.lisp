@@ -33,6 +33,11 @@
            "~A/cltpt/tests/test.org"
            (my-getenv "WORK_DIR")))))
 
+(lem:define-command open-brain-dir () ()
+  (let ((brain-dir (or (my-getenv "BRAIN_DIR")
+                       (error "couldnt get BRAIN_DIR env var"))))
+    (lem:switch-to-buffer (lem:find-file-buffer (uiop:ensure-directory-pathname brain-dir)))))
+
 ;; (defmethod asdf:perform :after ((op asdf:load-op)
 ;;                                 (system asdf:system))
 ;;   (when (string= (asdf:component-name system) "organ-mode")

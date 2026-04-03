@@ -86,6 +86,7 @@
 (led-key "b k" 'my-kill-current-buffer)
 (led-key "b K" 'my-kill-current-buffer-and-window)
 (led-key "d d" 'lem/directory-mode::find-file-directory)
+(led-key "d b" 'open-brain-dir)
 (led-key "f f" 'fp-find-file)
 (led-key "e" 'find-config)
 (led-key "l" 'reload-config-systems)
