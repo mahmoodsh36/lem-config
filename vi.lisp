@@ -90,6 +90,10 @@
 (led-key "e" 'find-config)
 (led-key "l" 'reload-config-systems)
 
+;; directory-mode keybindings
+(undefine-key lem/directory-mode::*directory-mode-keymap* "Space")
+(define-key lem/directory-mode::*directory-mode-keymap* "-" 'lem/directory-mode::directory-mode-up-directory)
+
 ;; lisp mode vi integration
 (defvar *lisp-vi-normal-keymap* (lem:make-keymap :description '*lisp-vi-normal-keymap*))
 (lem:define-key *lisp-vi-normal-keymap* "Space c" 'lem-lisp-mode/eval::lisp-eval-buffer)

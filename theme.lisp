@@ -82,6 +82,9 @@
   (organ/organ-mode::organ-block-keyword-attribute
    :foreground "#d4845e")
 
+  ;; completion popup
+  (lem/popup-menu::popup-menu-attribute :foreground "#f5e6cc" :background "#5a4030")
+
   ;; agenda-mode highlighting
   (organ/agenda-mode::agenda-keyword-attribute
    :foreground "#d4845e")
