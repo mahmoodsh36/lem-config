@@ -1,6 +1,6 @@
 (defpackage :lemetnal/utils
   (:use :cl)
-  (:export :find-nearest-rule-match :change-in-pair :pair-inner-offsets :my-getenv))
+  (:export :find-nearest-rule-match :change-in-pair :pair-inner-offsets :my-getenv :require-env))
 
 (in-package :lemetnal/utils)
 
@@ -100,3 +100,7 @@ for home-directory-related vars. if still empty, executes 'zsh -l -c \"echo \\$V
     (error (c)
       (format *error-output* "could not get ~A: ~A~%" var-name c)
       nil)))
+
+(defun require-env (var-name)
+  (or (my-getenv var-name)
+      (error "couldnt get ~A env var" var-name)))

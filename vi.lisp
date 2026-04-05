@@ -87,6 +87,10 @@
 (led-key "b K" 'my-kill-current-buffer-and-window)
 (led-key "d d" 'lem/directory-mode::find-file-directory)
 (led-key "d b" 'open-brain-dir)
+(led-key "d n" 'open-brain-notes-dir)
+(led-key "d t" 'open-volume-othermusic-dir)
+(led-key "d m" 'open-volume-music-dir)
+(led-key "d h" 'open-home-dir)
 (led-key "f f" 'fp-find-file)
 (led-key "e" 'find-config)
 (led-key "l" 'reload-config-systems)
@@ -101,6 +105,11 @@
 (defmethod lem-vi-mode/core:mode-specific-keymaps ((mode lem-lisp-mode:lisp-mode))
   (when (typep (lem-vi-mode/core:current-state) 'lem-vi-mode/states:normal)
     (list *lisp-vi-normal-keymap*)))
+
+;; some organ/agenda vi keys
+(lem:define-key organ/organ-mode:*organ-mode-keymap* "Space x" 'organ/organ-mode::organ-ctrl-c-ctrl-c)
+(lem:define-key organ/organ-mode:*organ-mode-keymap* "Space a c" 'organ/agenda-mode::agenda-mode-change-task-state)
+(lem:define-key organ/agenda-mode::*agenda-mode-keymap* "Space a c" 'organ/agenda-mode::agenda-mode-change-task-state)
 
 (defun offsets-to-range (start-offset end-offset)
   (when (and start-offset end-offset)

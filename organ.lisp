@@ -6,12 +6,16 @@
                "/"
                path))
 
+(defun open-dir (path)
+  (lem:switch-to-buffer
+   (lem:find-file-buffer
+    (uiop:ensure-directory-pathname path))))
+
 ;; organ config
 (setf organ:*organ-files*
       `((:path (,(cltpt/file-utils:as-dir-path
                   (cltpt/file-utils:join-paths
-                   (or (my-getenv "BRAIN_DIR")
-                       (error "couldnt get BRAIN_DIR env var"))
+                   *brain-dir*
                    "notes")))
          :glob "*.org"
          :format "org-mode")))
@@ -34,9 +38,30 @@
            (my-getenv "WORK_DIR")))))
 
 (lem:define-command open-brain-dir () ()
-  (let ((brain-dir (or (my-getenv "BRAIN_DIR")
-                       (error "couldnt get BRAIN_DIR env var"))))
-    (lem:switch-to-buffer (lem:find-file-buffer (uiop:ensure-directory-pathname brain-dir)))))
+  (open-dir *brain-dir*))
+
+(lem:define-command open-brain-notes-dir () ()
+  (open-dir
+   (cltpt/file-utils:join-paths
+    *brain-dir*
+    "notes")))
+
+(lem:define-command open-volume-othermusic-dir () ()
+  (open-dir
+   (cltpt/file-utils:join-paths
+    (require-env "VOLUME_DIR")
+    "othermusic")))
+
+(lem:define-command open-volume-music-dir () ()
+  (open-dir
+   (cltpt/file-utils:join-paths
+    (require-env "VOLUME_DIR")
+    "music")))
+
+(lem:define-command open-home-dir () ()
+  (open-dir
+   (or (my-getenv "HOME")
+       (error "couldnt get HOME_DIR or HOME env var"))))
 
 ;; (defmethod asdf:perform :after ((op asdf:load-op)
 ;;                                 (system asdf:system))
