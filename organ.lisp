@@ -20,6 +20,8 @@
          :glob "*.org"
          :format "org-mode")))
 
+(setf organ:*agenda-first-repeat-only* t)
+
 ;; (setf organ:*organ-files*
 ;;       `((:path (,(cltpt/file-utils:as-dir-path
 ;;                   (cltpt/file-utils:join-paths
