@@ -114,3 +114,8 @@ for home-directory-related vars. if still empty, executes 'zsh -l -c \"echo \\$V
   (cltpt/file-utils:join-paths
    (my-getenv "BRAIN_DIR")
    path))
+
+(defun open-dir (path)
+  (lem:switch-to-buffer
+   (lem:find-file-buffer
+    (uiop:ensure-directory-pathname path))))

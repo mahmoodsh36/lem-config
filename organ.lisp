@@ -1,10 +1,5 @@
 (in-package :lemetnal)
 
-(defun open-dir (path)
-  (lem:switch-to-buffer
-   (lem:find-file-buffer
-    (uiop:ensure-directory-pathname path))))
-
 ;; organ config
 (setf organ:*organ-files*
       `((:path (,(cltpt/file-utils:as-dir-path
@@ -14,6 +9,7 @@
          :glob "*.org"
          :format "org-mode")))
 
+;; only show first instance of a repeated task
 (setf organ:*agenda-first-repeat-only* t)
 
 ;; (setf organ:*organ-files*
@@ -106,3 +102,4 @@
  "r"
  organ:*organ-keymap*)
 (led-key "r b" 'books-find)
+(led-key "r h" 'organ/organ-mode:organ-open-attach-dir)

@@ -7,5 +7,6 @@
                (:file "main")
                (:file "constants")
                (:file "vi")
+               (:file "cltpt")
                (:file "organ")
                (:file "theme")))
