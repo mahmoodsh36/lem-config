@@ -79,6 +79,35 @@
                          (when r (invoke-restart r))))))
       (asdf:load-system "organ-mode" :force t))))
 
+(lem:define-command open-brain-dir () ()
+  (open-dir *brain-dir*))
+
+(lem:define-command open-work-dir () ()
+  (open-dir *work-dir*))
+
+(lem:define-command open-brain-notes-dir () ()
+  (open-dir
+   (cltpt/file-utils:join-paths
+    *brain-dir*
+    "notes")))
+
+(lem:define-command open-volume-othermusic-dir () ()
+  (open-dir
+   (cltpt/file-utils:join-paths
+    (require-env "VOLUME_DIR")
+    "othermusic")))
+
+(lem:define-command open-volume-music-dir () ()
+  (open-dir
+   (cltpt/file-utils:join-paths
+    *volume-dir*
+    "music")))
+
+(lem:define-command open-home-dir () ()
+  (open-dir
+   (or *home-dir*
+       (error "couldnt get HOME_DIR or HOME env var"))))
+
 ;; keybindings for general commands using lead-key
 (led-key "x" 'lem-lisp-mode/eval::lisp-eval-defun)
 (led-key "s" 'lem-lisp-mode/eval::lisp-eval-string)
@@ -91,6 +120,7 @@
 (led-key "d t" 'open-volume-othermusic-dir)
 (led-key "d m" 'open-volume-music-dir)
 (led-key "d h" 'open-home-dir)
+(led-key "d w" 'open-work-dir)
 (led-key "f f" 'fp-find-file)
 (led-key "e" 'find-config)
 (led-key "l" 'reload-config-systems)

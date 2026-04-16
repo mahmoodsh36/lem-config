@@ -88,7 +88,7 @@
 ;; keys to find files
 (define-command find-config () ()
   (find-file (concatenate 'string
-                          (my-getenv "HOME_DIR")
+                          (my-getenv "HOME")
                           "/.lem/init.lisp")))
 
 (define-command my-find-definition () ()
@@ -98,11 +98,6 @@
                                                            (or (lem/buffer/internal::symbol-string-at-point (current-point)) ""))))
     (format t "looking up ~A~%" symbol-name)
     (lem-lisp-mode/internal::find-definitions-by-name symbol-name)))
-
-(define-command my-menu () ()
-  (prompt-for-string
-   "test"
-   :completion-function (lambda (val) (list "test1" "test2" "test3"))))
 
 ;; set font
 (lem-core/commands/font::font-size-set 13)
@@ -115,3 +110,5 @@
         (delete-window window)))))
 
 (setf *automatic-tab-completion* t)
+
+(define-key *global-keymap* "C-x C-e" 'lem-lisp-mode/eval::lisp-eval-at-point)

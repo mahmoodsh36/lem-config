@@ -104,3 +104,13 @@ for home-directory-related vars. if still empty, executes 'zsh -l -c \"echo \\$V
 (defun require-env (var-name)
   (or (my-getenv var-name)
       (error "couldnt get ~A env var" var-name)))
+
+(defun from-work (path)
+  (cltpt/file-utils:join-paths
+   (my-getenv "WORK_DIR")
+   path))
+
+(defun from-brain (path)
+  (cltpt/file-utils:join-paths
+   (my-getenv "BRAIN_DIR")
+   path))

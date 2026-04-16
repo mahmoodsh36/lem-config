@@ -1,11 +1,5 @@
 (in-package :lemetnal)
 
-(defun from-work (path)
-  (concatenate 'string
-               (my-getenv "WORK_DIR")
-               "/"
-               path))
-
 (defun open-dir (path)
   (lem:switch-to-buffer
    (lem:find-file-buffer
@@ -38,32 +32,6 @@
    (format nil
            "~A/cltpt/tests/test.org"
            (my-getenv "WORK_DIR")))))
-
-(lem:define-command open-brain-dir () ()
-  (open-dir *brain-dir*))
-
-(lem:define-command open-brain-notes-dir () ()
-  (open-dir
-   (cltpt/file-utils:join-paths
-    *brain-dir*
-    "notes")))
-
-(lem:define-command open-volume-othermusic-dir () ()
-  (open-dir
-   (cltpt/file-utils:join-paths
-    (require-env "VOLUME_DIR")
-    "othermusic")))
-
-(lem:define-command open-volume-music-dir () ()
-  (open-dir
-   (cltpt/file-utils:join-paths
-    (require-env "VOLUME_DIR")
-    "music")))
-
-(lem:define-command open-home-dir () ()
-  (open-dir
-   (or (my-getenv "HOME")
-       (error "couldnt get HOME_DIR or HOME env var"))))
 
 ;; (defmethod asdf:perform :after ((op asdf:load-op)
 ;;                                 (system asdf:system))
@@ -137,3 +105,4 @@
 (led-key
  "r"
  organ:*organ-keymap*)
+(led-key "r b" 'books-find)
