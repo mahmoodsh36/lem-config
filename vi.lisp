@@ -129,6 +129,13 @@
 (undefine-key lem/directory-mode::*directory-mode-keymap* "Space")
 (define-key lem/directory-mode::*directory-mode-keymap* "-" 'lem/directory-mode::directory-mode-up-directory)
 
+(lem:define-command dir-open-external () ()
+  (let ((file (lem:text-property-at (lem:current-point) 'pathname)))
+    (when file
+      (lem-core::open-external-file file))))
+
+(define-key lem/directory-mode::*directory-mode-keymap* "." 'dir-open-external)
+
 ;; lisp mode vi integration
 (defvar *lisp-vi-normal-keymap* (lem:make-keymap :description '*lisp-vi-normal-keymap*))
 (lem:define-key *lisp-vi-normal-keymap* "Space c" 'lem-lisp-mode/eval::lisp-eval-buffer)

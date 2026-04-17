@@ -1,6 +1,7 @@
 (defpackage :lemetnal/utils
   (:use :cl)
-  (:export :find-nearest-rule-match :change-in-pair :pair-inner-offsets :my-getenv :require-env))
+  (:export :find-nearest-rule-match :change-in-pair :pair-inner-offsets :my-getenv :require-env
+           :from-work :from-brain :open-dir))
 
 (in-package :lemetnal/utils)
 
