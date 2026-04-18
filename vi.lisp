@@ -144,9 +144,20 @@
     (list *lisp-vi-normal-keymap*)))
 
 ;; some organ/agenda vi keys
-(lem:define-key organ/organ-mode:*organ-mode-keymap* "Space x" 'organ/organ-mode::organ-ctrl-c-ctrl-c)
-(lem:define-key organ/organ-mode:*organ-mode-keymap* "Space a c" 'organ/agenda-mode::agenda-mode-change-task-state)
-(lem:define-key organ/agenda-mode::*agenda-mode-keymap* "Space a c" 'organ/agenda-mode::agenda-mode-change-task-state)
+(defvar *organ-vi-normal-keymap* (lem:make-keymap :description '*organ-vi-normal-keymap*))
+(lem:define-key *organ-vi-normal-keymap* "Space x" 'organ/organ-mode::organ-ctrl-c-ctrl-c)
+(lem:define-key *organ-vi-normal-keymap* "Space a c" 'organ/agenda-mode::agenda-mode-change-task-state)
+(defmethod lem-vi-mode/core:mode-specific-keymaps :around ((mode organ/organ-mode:organ-mode))
+  (if (typep (lem-vi-mode/core:current-state) 'lem-vi-mode/states:normal)
+      (append (call-next-method) (list *organ-vi-normal-keymap*))
+      (call-next-method)))
+
+(defvar *agenda-vi-normal-keymap* (lem:make-keymap :description '*agenda-vi-normal-keymap*))
+(lem:define-key *agenda-vi-normal-keymap* "Space a c" 'organ/agenda-mode::agenda-mode-change-task-state)
+(defmethod lem-vi-mode/core:mode-specific-keymaps :around ((mode organ/agenda-mode:agenda-mode))
+  (if (typep (lem-vi-mode/core:current-state) 'lem-vi-mode/states:normal)
+      (append (call-next-method) (list *agenda-vi-normal-keymap*))
+      (call-next-method)))
 
 (defun offsets-to-range (start-offset end-offset)
   (when (and start-offset end-offset)
