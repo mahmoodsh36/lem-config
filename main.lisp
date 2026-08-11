@@ -61,6 +61,11 @@
 
 (define-keys lem/completion-mode::*completion-mode-keymap*
   ("Backspace" 'completion-backspace)
+  ;; to make space not close completion in the minibuffer
+  ("Space" (cmd
+             (if (lem/prompt-window::current-prompt-window)
+                 (lem/completion-mode::completion-self-insert)
+                 (lem/completion-mode::completion-insert-space-and-cancel))))
   ("Return" (cmd
               (lem/completion-mode::completion-select)
               (when (lem/prompt-window::current-prompt-window)
