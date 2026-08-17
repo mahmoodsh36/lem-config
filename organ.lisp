@@ -9,6 +9,24 @@
          :glob "*.org"
          :format "org-mode")))
 
+(setf organ/capture:*organ-capture-templates*
+      `((:key #\d
+         :name "default"
+         :dir ,*daily-dir*
+         :if-new "#+title:
+#+date: %(organ/utils:format-timestamp)"
+         :entry "
+* TODO %organ/capture::cursor"
+         :filename "todos.org")
+        (:key #\n
+         :name "new note"
+         :dir ,*notes-dir*
+         :if-new "#+title:
+#+date: %(organ/utils:format-timestamp)
+#+filetags: :note:
+#+identifier: %(organ/capture:unique-timestamp \"notes/\")"
+         :filename "%(organ/capture:unique-timestamp \"notes/\").org")))
+
 ;; only show first instance of a repeated task
 (setf organ:*agenda-first-repeat-only* t)
 
