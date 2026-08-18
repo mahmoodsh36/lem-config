@@ -92,3 +92,13 @@
 (led-key "r h" 'organ/organ-mode:organ-open-attach-dir)
 
 (setf organ/organ-mode:*organ-latex-preview-auto* t)
+
+(setf cltpt/latex-previews:*latex-preview-preamble*
+      (concatenate
+       'string
+       cltpt/latex-previews:*latex-preview-preamble*
+       "\\usepackage{\\string~/.emacs.d/common}\\usepackage{\\string~/.emacs.d/private}"))
+
+;; prevent transient popup for organ-mode
+(defmethod lem/transient:mode-transient-keymap ((mode organ/organ-mode::organ-mode))
+  nil)
