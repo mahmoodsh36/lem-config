@@ -122,6 +122,7 @@
 (led-key "d h" 'open-home-dir)
 (led-key "d w" 'open-work-dir)
 (led-key "f f" 'fp-find-file)
+(led-key "g" 'lem/grep:grep)
 (led-key "e" 'find-config)
 (led-key "l" 'reload-config-systems)
 
@@ -130,9 +131,11 @@
 (define-key lem/directory-mode::*directory-mode-keymap* "-" 'lem/directory-mode::directory-mode-up-directory)
 
 (lem:define-command dir-open-external () ()
-  (let ((file (lem:text-property-at (lem:current-point) 'pathname)))
-    (when file
-      (lem-core::open-external-file file))))
+  ;; the pathname property lives on the two spaces at line start, not under the cursor
+  (let ((file (lem/directory-mode/internal:get-pathname (lem:current-point))))
+    (if file
+        (lem-core:open-external-file file)
+        (lem:message "no file on this line"))))
 
 (define-key lem/directory-mode::*directory-mode-keymap* "." 'dir-open-external)
 
@@ -210,3 +213,45 @@
            (lem-vi-mode/commands::vi-delete beg end type)
            (lem:move-point (lem:current-point) beg))))
     (setf (lem-vi-mode/core:buffer-state) 'lem-vi-mode/states:insert)))
+
+;; while the completion popup is up it grabs M-p/M-n too, so history becomes
+;; unreachable. give them back to the prompt history and leave entry
+;; navigation for C-p/C-n.
+
+(defun in-prompt-p ()
+  (and (lem/prompt-window:current-prompt-window) t))
+
+(defun move-prompt-history (command fallback)
+  (if (in-prompt-p)
+      (progn (funcall command)
+             ;; the popup still lists candidates for the old input
+             (ignore-errors (lem/completion-mode:completion-refresh)))
+      (funcall fallback)))
+
+(lem:define-command completion-prompt-previous-history () ()
+  (move-prompt-history 'lem/prompt-window::prompt-previous-history
+                       'lem/completion-mode::completion-previous-line))
+
+(lem:define-command completion-prompt-next-history () ()
+  (move-prompt-history 'lem/prompt-window::prompt-next-history
+                       'lem/completion-mode::completion-next-line))
+
+(lem:define-key lem/completion-mode::*completion-mode-keymap*
+  "M-p" 'completion-prompt-previous-history)
+(lem:define-key lem/completion-mode::*completion-mode-keymap*
+  "M-n" 'completion-prompt-next-history)
+
+(lem:define-command completion-insert-focused-item () ()
+  (let* ((context lem/completion-mode::*completion-context*)
+         (menu (and context (lem/completion-mode::context-popup-menu context)))
+         (item (and menu (in-prompt-p) (lem/popup-menu:get-focus-item menu))))
+    (if item
+        (progn
+          (lem/completion-mode::completion-insert (lem:current-point) item)
+          (lem/completion-mode::continue-completion context))
+        (lem/completion-mode::completion-narrowing-down-or-next-line))))
+
+;; in the prompt, make Tab fill the input with the candidate the popup is on rather than narrowing
+;; to the common prefix and then walking the list.
+(lem:define-key lem/completion-mode::*completion-mode-keymap*
+  "Tab" 'completion-insert-focused-item)

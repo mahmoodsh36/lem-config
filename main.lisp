@@ -10,6 +10,9 @@
        (define-command ,name () () ,@body)
        ',name))) ;; return the generated command name
 
+;; no tab bar at the top (M-x toggle-tabbar brings it back for a session)
+(setf lem/tabbar:*enable-tabbar-on-startup* nil)
+
 (setf lem-core::*default-prompt-gravity* :bottom-display)
 (setf lem/prompt-window::*prompt-completion-window-gravity* :horizontally-above-window)
 (setf lem/prompt-window::*fill-width* t)
@@ -118,6 +121,5 @@
 
 (define-key *global-keymap* "C-x C-e" 'lem-lisp-mode/eval::lisp-eval-at-point)
 
-;; directory mode: show only the icon and name, no size/date columns
 (setf lem/directory-mode:*file-entry-inserters*
       (list #'lem/directory-mode/internal::insert-file-name))
