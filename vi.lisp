@@ -48,6 +48,14 @@
 
 (define-key lem-vi-mode:*normal-keymap* "g d" 'lem/language-mode::find-definitions)
 
+(define-command vi-scroll-one-line-down (n) (:universal)
+  (lem-core/commands/window:scroll-down n))
+(define-command vi-scroll-one-line-up (n) (:universal)
+  (lem-core/commands/window:scroll-up n))
+
+(define-key lem-vi-mode:*normal-keymap* "C-e" 'vi-scroll-one-line-down)
+(define-key lem-vi-mode:*normal-keymap* "C-y" 'vi-scroll-one-line-up)
+
 ;; Helper for cltpt and organ reloading
 (define-command reload-config-systems () ()
   (pushnew (concatenate 'string
