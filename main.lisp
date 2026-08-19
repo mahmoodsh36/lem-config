@@ -123,3 +123,23 @@
 
 (setf lem/directory-mode:*file-entry-inserters*
       (list #'lem/directory-mode/internal::insert-file-name))
+
+;; lem cerrors when a command is redefined from a different location, which misfires on this config,
+;; could have something to do with my nix flake or something
+#+sbcl
+(sb-ext:without-package-locks
+  (defun lem-core::check-already-defined-command (name source-location)
+    (flet ((source-file (location)
+             (alexandria:when-let ((path (and location
+                                              (sb-c:definition-source-location-namestring
+                                                  location))))
+               (pathname path))))
+      (alexandria:when-let* ((command (lem-core::get-command name))
+                             (old (source-file (lem-core::command-source-location command)))
+                             (new (source-file source-location)))
+        (unless (and (equal (pathname-name old) (pathname-name new))
+                     (equal (pathname-type old) (pathname-type new)))
+          (cerror "continue"
+                  "~A is already defined in another file ~A"
+                  name
+                  (namestring old)))))))
