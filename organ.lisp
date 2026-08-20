@@ -90,6 +90,7 @@
  organ:*organ-keymap*)
 (led-key "r b" 'books-find)
 (led-key "r h" 'organ/organ-mode:organ-open-attach-dir)
+(led-key "r o" 'organ/organ-mode::organ-open-at-point)
 
 (setf organ/organ-mode:*organ-latex-preview-auto* t)
 

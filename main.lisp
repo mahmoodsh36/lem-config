@@ -16,6 +16,7 @@
 (setf lem-core::*default-prompt-gravity* :bottom-display)
 (setf lem/prompt-window::*prompt-completion-window-gravity* :horizontally-above-window)
 (setf lem/prompt-window::*fill-width* t)
+(setf lem/transient:*transient-popup-delay* 0)
 
 ;; C-h is initially bound to delete-previous-char
 (defvar *help-keymap*
