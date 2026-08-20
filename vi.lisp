@@ -3,6 +3,9 @@
 ;; start in vi-mode
 (lem-vi-mode:vi-mode)
 
+;; case-insensitive `/` search
+(setf (lem-vi-mode/options:option-value "ignorecase") t)
+
 ;; vi-mode specific window keybindings
 (define-keys *window-keymap*
   ("l" 'lem-vi-mode/binds::vi-window-move-right)
