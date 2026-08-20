@@ -92,6 +92,21 @@
 (led-key "r h" 'organ/organ-mode:organ-open-attach-dir)
 (led-key "r o" 'organ/organ-mode::organ-open-at-point)
 
+(defun organ-open-node-by-id (id)
+  "open the file of the roam node with ID and jump to its element."
+  (let ((node (cltpt/roam:get-node-by-id (organ:current-roamer) id)))
+    (if node
+        (let ((text-obj (cltpt/roam:node-text-obj node)))
+          (lem:switch-to-buffer
+           (lem:find-file-buffer (cltpt/roam:node-file node)))
+          (when text-obj
+            (lem:move-to-position
+             (lem:current-point)
+             (1+ (cltpt/base:text-object-begin-in-root text-obj)))))
+        (lem:message "no node with id ~A" id))))
+
+(led-key "f m" (cmd (organ-open-node-by-id "tbl-albums")))
+
 (setf organ/organ-mode:*organ-latex-preview-auto* t)
 
 (setf cltpt/latex-previews:*latex-preview-preamble*
