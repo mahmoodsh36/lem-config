@@ -96,6 +96,9 @@
 (lem:define-command open-work-dir () ()
   (open-dir *work-dir*))
 
+(lem:define-command open-nixos-flake () ()
+  (find-file (from-work "nixos/flake.nix")))
+
 (lem:define-command open-brain-notes-dir () ()
   (open-dir
    (cltpt/file-utils:join-paths
@@ -133,6 +136,7 @@
 (led-key "d h" 'open-home-dir)
 (led-key "d w" 'open-work-dir)
 (led-key "f f" 'fp-find-file)
+(led-key "f n" 'open-nixos-flake)
 (led-key "g" 'lem/grep:grep)
 (led-key "e" 'find-config)
 (led-key "l" 'reload-config-systems)
@@ -150,6 +154,10 @@
 
 (define-key lem/directory-mode::*directory-mode-keymap* "." 'dir-open-external)
 
+(lem:define-command dir-quit () ()
+  (lem:quit-window (lem:current-window) :kill-buffer t))
+(define-key lem/directory-mode::*directory-mode-keymap* "q" 'dir-quit)
+
 ;; lisp mode vi integration
 (defvar *lisp-vi-normal-keymap* (lem:make-keymap :description '*lisp-vi-normal-keymap*))
 (lem:define-key *lisp-vi-normal-keymap* "Space c" 'lem-lisp-mode/eval::lisp-eval-buffer)
@@ -161,10 +169,58 @@
 (defvar *organ-vi-normal-keymap* (lem:make-keymap :description '*organ-vi-normal-keymap*))
 (lem:define-key *organ-vi-normal-keymap* "Space x" 'organ/organ-mode::organ-ctrl-c-ctrl-c)
 (lem:define-key *organ-vi-normal-keymap* "Space a c" 'organ/agenda-mode::agenda-mode-change-task-state)
+;; make % work for some organ-mode elements
+(defvar *organ-block-types*
+  '(or
+    cltpt/org-mode:org-block
+    cltpt/org-mode:org-src-block
+    cltpt/org-mode:org-example-block
+    cltpt/org-mode:org-export-block
+    cltpt/org-mode:org-drawer
+    cltpt/org-mode:org-prop-drawer
+    cltpt/org-mode:org-latex-env))
+
+(defun organ-block-pair-target ()
+  "if the cursor is on the opening or closing line of an org block, return the point of the other
+end, otherwise nil."
+  (let ((blk (organ/utils:find-parent-of-type
+              (organ/organ-mode::current-text-obj)
+              *organ-block-types*)))
+    (when blk
+      (let* ((buf (lem:current-buffer))
+             (obj-begin (cltpt/base:text-object-begin-in-root blk))
+             (begin-pt (organ/utils:char-offset-to-point
+                        buf
+                        (+ obj-begin (cltpt/base:text-object-contents-begin blk))))
+             (end-pt (organ/utils:char-offset-to-point
+                      buf
+                      (+ obj-begin (cltpt/base:text-object-contents-end blk))))
+             (cur-line (lem:line-number-at-point (lem:current-point))))
+        (cond
+          ((= cur-line (lem:line-number-at-point begin-pt))
+           end-pt)
+          ((= cur-line (lem:line-number-at-point end-pt))
+           (lem:line-start begin-pt)))))))
+
+(lem-vi-mode/commands/utils:define-motion organ-vi-move-to-matching-item
+    (&optional n)
+    (:universal-nil)
+    (:type :inclusive :jump t :default-n-arg nil)
+  (let ((target (unless n (organ-block-pair-target))))
+    (if target
+        (lem:move-point (lem:current-point) target)
+        (lem-vi-mode/commands:vi-move-to-matching-item n))))
+
+(defvar *organ-vi-motion-keymap* (lem:make-keymap :description '*organ-vi-motion-keymap*))
+(lem:define-key *organ-vi-motion-keymap* "%" 'organ-vi-move-to-matching-item)
+
 (defmethod lem-vi-mode/core:mode-specific-keymaps :around ((mode organ/organ-mode:organ-mode))
-  (if (typep (lem-vi-mode/core:current-state) 'lem-vi-mode/states:normal)
-      (append (call-next-method) (list *organ-vi-normal-keymap*))
-      (call-next-method)))
+  (append (call-next-method)
+          (when (typep (lem-vi-mode/core:current-state) 'lem-vi-mode/states:normal)
+            (list *organ-vi-normal-keymap*))
+          (when (typep (lem-vi-mode/core:current-state)
+                       '(or lem-vi-mode/states:normal lem-vi-mode/visual:visual))
+            (list *organ-vi-motion-keymap*))))
 
 (defvar *agenda-vi-normal-keymap* (lem:make-keymap :description '*agenda-vi-normal-keymap*))
 (lem:define-key *agenda-vi-normal-keymap* "Space a c" 'organ/agenda-mode::agenda-mode-change-task-state)
