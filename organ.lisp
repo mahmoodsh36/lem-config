@@ -27,6 +27,9 @@
 #+identifier: %(organ/capture:unique-timestamp \"notes/\")"
          :filename "%(organ/capture:unique-timestamp \"notes/\").org")))
 
+(add-hook *after-init-hook*
+          (lambda () (organ/roam::start-roam-rescan)))
+
 ;; only show first instance of a repeated task
 (setf organ:*agenda-first-repeat-only* t)
 
