@@ -122,6 +122,49 @@
    (or *home-dir*
        (error "couldnt get HOME_DIR or HOME env var"))))
 
+(defun same-file-p (a b)
+  (flet ((bare (x) (string-right-trim "/" (namestring x))))
+    (string= (bare a) (bare b))))
+
+(defun current-file-path ()
+  "the file this buffer is about: the one under the cursor in a directory
+listing, otherwise the file the buffer visits (the pdf in reader mode, etc)."
+  (if (eq (lem:buffer-major-mode (lem:current-buffer))
+          'lem/directory-mode/mode:directory-mode)
+      (lem/directory-mode/internal:get-pathname (lem:current-point))
+      (lem:buffer-filename)))
+
+(defun point-on-file (path)
+  "put the cursor on PATH's line in the listing."
+  (let ((point (lem:current-point)))
+    (lem:buffer-start point)
+    (loop for listed = (lem/directory-mode/internal:get-pathname point)
+          when (and listed (same-file-p listed path))
+            return t
+          while (lem:line-offset point 1))))
+
+(lem:define-command jump-to-file-directory () ()
+  "open this file's directory with the cursor on the file."
+  (let* ((here (lem:buffer-filename))
+         (dir (cond ((null here) nil)
+                    ((uiop:directory-pathname-p here)
+                     (uiop:pathname-parent-directory-pathname here))
+                    (t (uiop:pathname-directory-pathname here)))))
+    (if (null dir)
+        (lem:message "no directory behind this buffer")
+        (progn
+          (lem:switch-to-buffer (lem:find-file-buffer dir))
+          (point-on-file here)))))
+
+(lem:define-command copy-current-file-path () ()
+  "copy the path of the file this buffer is about."
+  (let ((path (current-file-path)))
+    (if (null path)
+        (lem:message "no file behind this buffer")
+        (let ((string (namestring path)))
+          (lem:copy-to-clipboard string)
+          (lem:message "copied: ~A" string)))))
+
 ;; keybindings for general commands using lead-key
 (led-key "x" 'lem-lisp-mode/eval::lisp-eval-defun)
 (led-key "s" 'lem-lisp-mode/eval::lisp-eval-string)
@@ -129,6 +172,7 @@
 (led-key "b k" 'my-kill-current-buffer)
 (led-key "b K" 'my-kill-current-buffer-and-window)
 (led-key "d d" 'lem/directory-mode::find-file-directory)
+(led-key "d j" 'jump-to-file-directory)
 (led-key "d b" 'open-brain-dir)
 (led-key "d n" 'open-brain-notes-dir)
 (led-key "d t" 'open-volume-othermusic-dir)
@@ -140,6 +184,8 @@
 (led-key "g" 'lem/grep:grep)
 (led-key "e" 'find-config)
 (led-key "l" 'reload-config-systems)
+(led-key "; r" 'lem:revert-buffer)
+(led-key "; u" 'copy-current-file-path)
 
 ;; directory-mode keybindings
 (undefine-key lem/directory-mode::*directory-mode-keymap* "Space")
