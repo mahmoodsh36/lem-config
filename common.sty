@@ -1,0 +1,1134 @@
+\makeatletter%
+\@ifclassloaded{beamer}%
+  {} % {\usetheme{Antibes}}%
+  {
+    \usepackage{enumitem}% enumitem doesnt work with beamer so only load it if we arent using beamer
+    \usepackage[margin=0.2in]{geometry}
+    \usepackage{hyperref} % hyperref is loaded by default in beamer, if we load it we get "option clash" error
+  }
+\makeatother%
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{indentfirst}
+\usepackage{pgffor}
+\usepackage{amssymb}
+\usepackage{pifont}
+\usepackage{cancel}
+\usepackage{amsthm}
+\usepackage{polynom}
+\usepackage{tikz}
+\usepackage[tikz]{bclogo}
+\usepackage{listings}
+\usepackage[most,listings]{tcolorbox}
+\usepackage{forest}
+\usepackage{tikz-3dplot}
+\usepackage{mathtools}
+\usepackage{pgfplots}
+\usetikzlibrary{tikzmark,calc,fit,matrix,arrows,automata,positioning,angles,quotes,trees,graphs,backgrounds,intersections,arrows.meta,bbox,chains,shapes,calligraphy,decorations.pathreplacing,shapes.multipart,decorations.pathmorphing}
+\usepgfplotslibrary{fillbetween}
+\usepackage{centernot}
+\usepackage{lmodern}
+% \usepackage{physics} % why does it redefine \div?
+\usepackage{physics2}
+\usepackage[linesnumbered,vlined]{algorithm2e}
+\usepackage{algpseudocode}
+\usepackage{algorithmicx}
+% \usepackage{karnaugh-map}
+\usepackage{karnaughmap}
+\usepackage{bm}
+\usepackage{circuitikz}
+\usepackage{listofitems}
+\usepackage{proof}
+% dont enable this its horrible, makes rendering from org-babel not work properly
+% \tikzstyle{every picture}+=[remember picture]
+% \usepackage{enumitem} % incompatible with beamer
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{iftex}
+\usepackage{turnstile}
+\usepackage[normalem]{ulem}
+\usepackage{ifthen}
+\usepackage{xifthen}
+\usepackage{xparse}
+\usepackage{pdfpages}
+\usepackage{relsize} % for \mathsmaller, \mathlarger
+% \usepackage{fonttable}
+\usepackage{float} % fixes some errors for figure previews in org mode (allows the figure to "float")
+% \usepackage{breqn}
+\usepackage{graphicx}
+\usepackage{lipsum}
+\usepackage{mathrsfs} % for \mathscr
+\usepackage{newenviron}
+% \usepackage{upgreek}
+\usepackage{bbm}
+% \usepackage{newpxtext,newpxmath}
+% \usepackage{cool}
+\usepackage{xcolor}
+\usepackage{ifluatex}
+\usepackage{svg}
+\usepackage{biblatex}
+\addbibresource{\string~/brain/bib.bib}
+% \usepackage[noabbrev,capitalise]{cleveref} % https://texblog.org/2013/05/06/cleveref-a-clever-way-to-reference-in-latex/
+\usepackage{expl3}
+\usepackage{multicol}
+\usepackage{siunitx}
+\usepackage[Export]{adjustbox}
+\usepackage{tabularray}
+\UseTblrLibrary{amsmath}
+\usepackage{blkarray}
+\usepackage{stmaryrd} % \llbracket
+\usepackage{latexcolors}
+\usepackage{colortbl}
+
+\hypersetup{
+  pdfauthor={mahmood sheikh},
+  % pdftitle={},
+  bookmarks=true,
+  bookmarksopen=true,
+  bookmarksopenlevel=3, % show sections and subsections in bookmarks
+  pdfpagemode=UseOutlines, % open PDF with bookmarks panel
+}
+
+\definecolor{darkorange}{rgb}{0.688039215686, 0.309411764706, 0.078431372549}
+
+% these work smoothly, unlike other fonts
+% \usepackage{newtxtext,newtxmath}
+
+% change the font used for operators, to prevent some errors when a custom font is used. https://tex.stackexchange.com/questions/219417/how-to-change-the-default-font-of-math-operators
+% \DeclareSymbolFont{euleroperators}{U}{eur}{m}{n}
+% \SetSymbolFont{euleroperators}{bold}{U}{eur}{b}{n}
+% \makeatletter
+% \renewcommand{\operator@font}{\mathgroup\symeuleroperators}
+% \makeatother
+
+\ifLuaTeX
+  % needed fror lualatex to work with svgs  https://tex.stackexchange.com/questions/158571/includesvg-does-not-detect-svg-file/158612#158612
+  \usepackage{pdftexcmds}
+  \makeatletter
+  \let\pdfstrcmp\pdf@strcmp
+  \let\pdffilemoddate\pdf@filemoddate
+  \makeatother
+
+  % to fix some errors with unicode-math where some symbols cannot be found
+  % \renewcommand\DeclareMathOperator\newcommand
+  % \renewcommand\operatorname[1]{\,#1\,}
+
+  % graphdrawing library is only available to luatex
+  \usetikzlibrary{graphdrawing}
+  \usegdlibrary{force, trees, layered}
+\fi
+\newcommand\brm[1]{\bm{\mathrm{#1}}} % this doesnt work with unicode-math
+
+% get \varv from the txfonts package
+\DeclareSymbolFont{matha}{OML}{txmi}{m}{it}% txfonts
+\DeclareMathSymbol{\varv}{\mathord}{matha}{118}
+
+% matrix derivative notation for vector calculus
+\newcommand{\matderiv}[2][]{%
+  \ifthenelse{\equal{#1}{}}
+  {\ensuremath{\left[\brm{D}#2\right]}}% if #1 is empty
+  {\ensuremath{\left[\brm{D}_{#1}#2\right]}}% if #2,#1 not empty
+}
+
+% integral notation, https://tex.stackexchange.com/questions/174121/easy-command-or-package-for-properly-formatted-integrals
+\makeatletter
+\newcommand*{\intf}{%
+  \@ifnextchar_{\intf@sub}{%
+    \@ifnextchar^{\intf@sup}{%
+      \intf@{}{}%
+    }%
+  }%
+}
+\def\intf@sub_#1{%
+  \@ifnextchar^{%
+    \intf@sub@sup{#1}%
+  }{%
+    \intf@{#1}{}%
+  }%
+}
+\def\intf@sup^#1{%
+  \@ifnextchar_{%
+    \intf@sup@sub{#1}%
+  }{%
+    \intf@{}{#1}%
+  }%
+}
+\def\intf@sub@sup#1^#2{\intf@{#1}{#2}}
+\def\intf@sup@sub#1_#2{\intf@{#2}{#1}}
+\newcommand*{\intf@}[4]{%
+  \int
+  \ifx\\#1\\\else _{#1}\fi
+  \ifx\\#2\\\else ^{#2}\fi
+  \!#3\,\mathrm{d}#4%
+}
+\makeatother
+
+% typesetting partial derivatives flexibly: https://tex.stackexchange.com/questions/22076/can-i-have-a-flexible-partial-derivative-macro/22571#22571
+\makeatletter
+
+\newcommand\Der[2]{%
+    \begingroup
+    \@temptokena{\@gobble}%
+    \@tempcnta\z@
+    \expandafter\@Der@var#2\relax
+    \ensuremath{\frac{\partial
+    \ifnum\@tempcnta>\@ne
+        ^{\the\@tempcnta}%
+    \fi
+    #1}{\the\@temptokena}}%
+    \endgroup
+}
+
+\def\@Der@var#1{%
+    \ifx\relax#1\empty\else
+        \def\next{\expandafter\@Der@num\expandafter{\the\@tempcntb}{#1}}%
+        \afterassignment\next
+        \@tempcntb=0%
+    \fi
+}
+
+\def\@Der@num#1#2{%
+    \ifnum#1=\z@
+        \advance\@tempcnta by \@ne
+        \@temptokena\expandafter{\the\@temptokena\,\partial{#2}}%
+    \else
+        \advance\@tempcnta by #1\relax
+        \@temptokena\expandafter{\the\@temptokena\,\partial{#2}^{#1}}%
+    \fi
+    \@Der@var
+}
+
+\makeatother
+
+% another partial derivative typesetting attempt, https://tex.stackexchange.com/questions/22076/can-i-have-a-flexible-partial-derivative-macro/22571#22571
+\makeatletter
+\newcommand{\der}[2]{\begingroup
+  \@tempswafalse\toks@={}\count@=\z@
+  \@for\next:=#2\do
+    {\expandafter\check@var\next\@nil
+     \advance\count@\der@exp
+     \if@tempswa
+       \toks@=\expandafter{\the\toks@\,}%
+     \else
+       \@tempswatrue
+     \fi
+     \toks@=\expandafter{\the\expandafter\toks@\expandafter\partial\der@var}}%
+  \frac{\partial\ifnum\count@=\@ne\else^{\number\count@}\fi#1}{\the\toks@}%
+  \endgroup}
+\def\check@var{\@ifstar{\mult@var}{\one@var}}
+\def\mult@var#1#2\@nil{\def\der@var{#2^{#1}}\def\der@exp{#1}}
+\def\one@var#1\@nil{\def\der@var{#1}\chardef\der@exp\@ne}
+\makeatother
+
+% alternative to \hyperref to refer to a symbols definition/source using blk
+\newcommand{\refdef}[2][]{%
+  #2
+}
+\newcommand{\mrefdef}[2][]{% currently doesnt work, just a placeholder for making references in latex using blk links
+}
+% define a variable with a given id, 1st arg is id, 2nd is definition, the id should be referrable by \refdef similar to blk id's
+\newcommand{\defvar}[2]{% define a variable, \defvar{id/name}{symbol}, like lexical bindings but maybe extend it to highest block
+  \refdef[#1]{#2}
+}
+% define a variable with a given variable name, it should be referred to by \refvar, the variable definition should only be valid for current document and should hold until \vardef is used again
+\newcommand{\vardef}[2]{#2}
+\newcommand{\varref}[2][]{}
+\newcommand{\bythis}[2][]{%
+  % by: #2
+  by ?
+}
+
+% for inline pseudocode?
+\NewDocumentCommand{\code}{m}{
+  \texttt{#1}
+}
+
+% no space before paragraph (is this desired?)
+% \setlength{\parindent}{0pt}
+
+% some needed operators to not lose my sanity
+\DeclareMathOperator{\spn}{\refdef[blk:def-span]{span}}
+\DeclareMathOperator{\dom}{dom}
+\DeclareMathOperator{\range}{range}
+\DeclareMathOperator{\img}{img}
+\DeclareMathOperator{\adj}{adj}
+\newcommand\dif[1]{\:\mathrm{d}#1}
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+\DeclareMathOperator{\rank}{rank}
+\newcommand{\ihat}{\hat{\textbf{\i}}}
+\newcommand{\jhat}{\hat{\textbf{\j}}}
+\newcommand{\khat}{\hat{\textbf{k}}}
+\newcommand{\rhat}{\hat{\textbf{r}}}
+\newcommand{\thetahat}{\boldsymbol{\hat{\theta}}}
+\newcommand{\cmark}{\text{\ding{51}}}
+\newcommand{\xmark}{\text{\ding{55}}}
+\renewcommand\Pr{\prob}
+\newcommand\prob{\mathop{\refdef[blk:def-prob]{\mathsf{P}}}} % for probability function symbol
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\newcommand*{\defeq}{\stackrel{\text{def}}{=}} % def on top of equal sign
+\DeclareMathOperator{\Mat}{Mat} % Mat symbol for sets of matrices of specific dimensions
+\newcommand{\textand}{\textop{and}}
+\newcommand{\midand}{\mathbin{\operatorname{and}}}
+\newcommand{\textnot}{\textsc{not }}
+\newcommand{\textop}[1]{\relax\ifmmode\mathop{\text{#1}}\else\text{#1}\fi} % https://tex.stackexchange.com/questions/8047/spacing-around-text-in-mathmode
+\newcommand{\textor}{\textop{or}}
+\newcommand{\textif}{\algop{if}}
+\newcommand{\textiff}{\textop{iff}}
+\newcommand{\textthen}{\textop{then}}
+\newcommand{\textgoto}{\textop{goto}}
+\newcommand{\textelse}{\algop{else}}
+\newcommand{\textloop}{\textop{loop}}
+\newcommand{\textstop}{\textop{stop}}
+\newcommand{\textfor}{\algop{for}}
+\newcommand{\textwhile}{\algop{while}}
+\newcommand{\textend}{\algop{end}}
+\newcommand{\textreturn}{\algop{return}}
+\newcommand{\textotherwise}{\text{otherwise}}
+\DeclareMathOperator{\graph}{graph}
+\newcommand{\angled}[1]{\langle #1 \rangle}
+\newcommand{\decr}[1]{#1\texttt{-{}-}} % increment of a number
+\newcommand{\incr}[1]{#1\texttt{+{}+}} % decrement of a number
+\newcommand{\sucfunc}{\brm{s}} % successor function
+\newcommand{\prefunc}{\brm{p}} % predecessor function (do i need this one?)
+\newcommand{\halt}{\refdef[blk:the-halt]{\langname{HALT}}} % operator for the halting problem
+\newcommand{\converges}[1]{#1 \refdef[blk:def-program-conv]{\downarrow}}
+\newcommand{\convergesto}[2]{\left. #1 \right\downarrow=#2}
+\newcommand{\diverges}[1]{#1 \refdef[blk:def-program-div]{\uparrow}}
+\newcommand{\vctlen}[1]{\refdef[blk:def-euclid-norm]{|}#1\refdef[blk:def-euclid-norm]{|}} % vector euclidean norm or length or whatever you'd wanna call it.
+\newcommand{\card}[1]{\left\lvert #1 \right\rvert} % set cardinality
+\newcommand{\scomp}[1]{\overline{#1}} % set complement
+\DeclarePairedDelimiter{\tupl}{(}{)}
+\newcommand\softmax{\refdef[blk:blk-softmax]{\operatorname{softmax}}}
+\newcommand\powset{\refdef[blk:def-pow-set]{\mathcal{P}}}
+\newcommand\sigmoid{\refdef[blk:def-sigmoid]{\operatorname{\sigma}}}
+\newcommand\data{\mathcal{D}}
+\newcommand{\textfalse}{\textop{false}}
+\newcommand{\texttrue}{\textop{false}}
+\newcommand{\seqconvto}[3]{\refdef[blk:def-seq-conv]{\lim_{#2 \to \infty} #1 = #3}} % convergence of a sequnece to a number, first arg is the sequence name (e.g. a_n), second is the sequence index (e.g. n), third is the value it converges to.
+% \newcommand{\seq}[2]{\refdef[blk:def-seq]{#1_{#2}}} % sequence notation, first arg is sequence name, second is the indexing variable
+\newcommand{\seqelm}[2]{\refdef[blk:def-seq]{(#1_{#2})}} % get a specific element of a sequence by its index, first arg is the sequence, second is the element's index
+\newcommand{\attn}{\refdef[blk:blk-attention]{\operatorname{Attention}}}
+\renewcommand{\log}{\refdef[blk:def-log]{\operatorname{log}}}
+\renewcommand{\ln}{\refdef[blk:def-ln]{\operatorname{ln}}}
+\newcommand{\euler}{\refdef[blk:def-euler-num]{e}}
+\newcommand{\lisni}[2]{{#1}_{#2}} % to denote a list via name and index
+\newcommand{\funclim}[2]{{\refdef[blk:def-lim]{\lim}}_{#1}#2}
+\newcommand{\xor}{\oplus}
+\newcommand{\parity}{\mathop{\refdef[blk:def-parity]{\bigoplus}}}
+\DeclarePairedDelimiter{\opair}{\langle}{\rangle} % \ref{blk:def-ord-pair}
+% more for algorithms?
+\newcommand{\algname}[1]{\textsc{#1}}
+\newcommand{\varname}[1]{#1}
+\newcommand{\alginput}[1]{\textbf{input}:\text{#1}}
+\newcommand{\algcom}[1]{\parbox[t]{0.9\textwidth}{\textcolor{darkorange}{/*} #1 \textcolor{darkorange}{*/}}}
+\newcommand{\algline}[1]{\parbox[t]{0.9\textwidth}{#1}}
+\newcommand{\algcominline}[1]{\text{ \textcolor{darkorange}{/*} #1 \textcolor{darkorange}{*/}}}
+\newcommand{\algspace}{\quad}
+\newcommand{\algop}[1]{\textop{\textcolor{darkorange}{#1}}}
+\newcommand{\algnil}{\algop{nil}}
+\newcommand{\algnull}{\algnil}
+\newcommand{\subgraph}{\refdef[def-subgraph]{\subseteq}}
+\newcommand{\inducegraph}[2]{#1[#2]}
+% for placing equal signs over operators
+\NewDocumentCommand{\?}{g}{%
+  \overset{?}{\IfNoValueTF{#1}{=}{#1}}%
+}
+\newcommand{\algout}[1]{\textbf{output}:\text{#1}}
+\newcommand{\boolor}{\refdef{\lor}}
+\newcommand{\bboolor}{\mathop{\refdef{\bigvee}}}
+\newcommand{\booland}{\refdef{\land}}
+\newcommand{\bbooland}{\mathop{\refdef{\land}}}
+\newcommand{\boolnot}{\refdef{\lnot}}
+\newcommand{\boolrestrict}{\refdef[blk:not-bool-restrict]{\mathcal{R}}}
+\newcommand{\fboolrestrict}[2]{#1\refdef[blk:def-bool-restrict]{|}_{#2}}
+\newcommand{\andreev}{\refdef[blk:def-andreev]{\mathsf{And}}}
+\newcommand{\logb}{\refdef[blk:def-log]{\operatorname{log}_2}} % binary log, for boolean complexity mostly
+% define \lhs for "left-hand side" in text or "L.H.S." in math.
+\newcommand{\lhs}{\relax\ifmmode\mathrm{L.H.S.}\else{}left-hand side\xspace\fi}
+% define \rhs for "right-hand side" in text or "R.H.S." in math.
+\newcommand{\rhs}{\relax\ifmmode\mathrm{R.H.S.}\else{}right-hand side\xspace\fi}
+\newcommand{\textboolor}{\refdef{\mathsf{OR}}}
+\newcommand{\textbooland}{\refdef{\mathsf{AND}}}
+\newcommand{\textboolmod}{\refdef{\mathsf{MOD}}}
+\newcommand{\textboolnot}{\refdef{\mathsf{NOT}}}
+\newcommand{\textboolxor}{\refdef{\mathsf{XOR}}}
+\newcommand{\modd}{\text{mod}\,}
+\newcommand{\boolcliq}{\refdef[blk:def-cliq-bool]{\textsc{CLIQUE}}}
+\newcommand{\categ}{\refdef[blk:def-category]{\mathscr{C}}}
+\DeclareMathOperator{\domn}{\refdef[blk:def-func-dom]{domain}}
+\DeclareMathOperator{\codomn}{\refdef[blk:def-func-codom]{codomain}}
+\newcommand{\ndoset}{\refdef[blk:def-endo]{End}}
+\newcommand{\langname}[1]{\texttt{#1}}
+\newcommand{\compxclass}[1]{\mathsf{#1}}
+\newcommand{\compclass}[1]{\mathsf{#1}}
+\newcommand{\compxclsorcl}[2]{{#1}^{\refdef[blk:def-compx-orc]{+}#2}}
+\newcommand{\orcl}{\compxclsorcl}
+\newcommand{\conjug}{\overline}
+\newcommand{\orthocomp}[1]{{#1}^{\refdef[blk:def-ortho-comp]{\perp}}}
+\newcommand{\charfunc}[1]{\refdef[blk:def-char-function-set]{\brm{1}}_{#1}} % characteristic function of a set
+
+% graph theory?
+\newcommand{\grap}[1][G]{\refdef[blk:def-graph]{#1}}
+\newcommand{\vertex}[1][v]{\refdef[blk:def-vertex]{#1}}
+\newcommand{\vertexset}[1][V]{\refdef[blk:def-vertex-set]{#1}}
+\newcommand{\edge}[1][e]{\refdef[blk:def-edge]{#1}}
+\newcommand{\edgeset}[1][E]{\refdef[blk:def-edge-set]{#1}}
+\newcommand{\dartrev}{\refdef[blk:def-dartrev]{\operatorname{rev}}}
+\newcommand{\graphdel}{\mathrel{\refdef[blk:def-graph-del]{\setminus}}}
+\newcommand{\edgecon}{\refdef[blk:def-edge-con]{/}}
+\newcommand{\graphemb}{\refdef[blk:def-graph-emb]{\pi}}
+\newcommand{\graphembdual}{\refdef[blk:def-face]{\operatorname{dual}}} % the dual of a graph embedding
+\newcommand{\graphembduall}[1][\pi]{\refdef[blk:def-face]{{#1}^*}}
+\newcommand{\embgraphdual}{\refdef[blk:def-embgraphdual]{\operatorname{dual}}} % the dual graph of an embedded graph
+\newcommand{\embgraphduall}[1][G]{\refdef[blk:def-embgraphdual]{{#1}^*}}
+\newcommand{\dartset}{\refdef[blk:def-graph-edgecen]{\operatorname{D}}}
+\newcommand{\embgraph}[1][G]{\refdef[blk:def-emb-graph]{{#1}_{\graphemb}}}
+\newcommand{\tree}[1][T]{\refdef[blk:def-tree]{#1}}
+\newcommand{\embgraphdualspantree}{\refdef[blk:not-dual-spantree]{T^*}}
+\newcommand{\intertree}{\embgraphdualspantree}
+\newcommand{\pathh}[1][p]{\refdef[blk:def-path]{#1}}
+\newcommand{\edgebetween}[2]{#1\refdef[blk:def-edge]{\rightarrow}#2} % edge in graph between two given vertices
+\newcommand{\pathbetween}[2]{#1\to #2} % path between 2 vertices
+\newcommand{\pathb}[2]{#1\to #2} % same as above
+\newcommand{\graphembrestrict}{\refdef[blk:def-graph-emb]{|}}
+\newcommand{\graphforest}[1][F]{\refdef[blk:def-forest]{#1}}
+\newcommand{\dartbound}{\refdef[blk:def-dart-cut]{\overrightarrow{\delta}}}
+\newcommand{\edgecut}{\refdef{\delta}}
+\newcommand{\edgedicut}{\refdef{\delta^+}}
+\newcommand{\graphdist}{\refdef{\delta}}
+\newcommand{\infface}{\refdef[blk:def-face-inf]{f_{\infty}}}
+\newcommand{\ddgraph}{\operatorname{DDG}}
+\newcommand{\graphlca}{\operatorname{lca}}
+\newcommand{\flow}{\refdef[blk:def-flow]{\ptvct{\gamma}}}
+\newcommand{\slack}{\refdef[blk:def-slack-cost]{\cost_{\price}}}
+\newcommand{\cost}{\ptvct{c}}
+\newcommand{\capac}{\ptvct{c}}
+\newcommand{\circul}{\refdef[blk:def-circul]{\ptvct{\theta}}}
+\newcommand{\price}{\refdef[blk:def-slack-cost]{\ptvct{\rho}}}
+\newcommand{\darteta}{\refdef[blk:not-dart-eta]{\ptvct{\eta}}}
+\newcommand{\dartvertexmat}{\refdef[blk:def-dart-vertex-mat]{A}}
+\newcommand{\darthead}{\refdef[blk:def-dart-head-tail]{\operatorname{head}}}
+\newcommand{\darttail}{\refdef[blk:def-dart-head-tail]{\operatorname{tail}}}
+\newcommand{\dualstar}{\refdef[blk:def-embgraphdual]{*}}
+\newcommand{\facepotent}{\refdef[blk:def-circul]{\ptvct{\varphi}}}
+
+% probability
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\cov}{\refdef[blk:def-covar]{cov}}
+\DeclareMathOperator{\expc}{\refdef[blk:def-expec]{\mathsf{E}}} % expected value symbol
+
+% many different products
+\newcommand{\prodinr}[2]{\refdef[blk:def-inr-prod]{\langle} #1, #2 \refdef[blk:def-inr-prod]{\rangle}} % inner product
+\newcommand{\proddot}[2]{#1 \refdef[blk:def-proddot]{\cdot} #2} % dot product
+\newcommand{\prodtens}{\refdef[blk:def-tensor-prod]{\,\otimes\,}} % tensor product
+\newcommand{\prodvs}{\refdef[blk:def-vs-prod]{\times}} % vector space product
+\newcommand{\prodcart}{\refdef[blk:def-cart-prod]{\times}} % cartesian product
+\newcommand{\prodmat}{\refdef[blk:def-prodmat]{\cdot}} % matrix product
+% products but instead of writing "1 x 1" we write something like \myprod{1}{1}
+\newcommand{\mprodmat}[1]{\impop[blk:def-prodmat]{#1}}
+\newcommand{\mproddot}[1]{\impop[blk:def-proddot]{#1}} % dot product
+\newcommand{\mcomp}[1]{#1} % composition, e.g. fgc instead of f(g(c)).
+\newcommand{\addvec}{\refdef[blk:def-add-vec]{+}} % vector addition
+\newcommand{\expvs}[2]{{#1}^{#2}} % vector space exponent
+
+% to denote an implicit operation between candidates, \ref{blk:c170e620-ba4d-4162-8522-fd70ba57753d}, example usage: \(\impop[blk:myid][+]{979}{2}{31}{9}\), \(\impop[blk:myid]{979}{2}{31}{9}\)
+\makeatletter
+\NewDocumentCommand{\impop}{O{}O{\mathrel{\refdef[#1]{\otimes}}}m}{#3\checknextarg{#2}}
+\newcommand{\checknextarg}[1]{\@ifnextchar\bgroup{\gobblenextarg{#1}}{}}
+\newcommand{\gobblenextarg}[2]{#1#2\@ifnextchar\bgroup{\gobblenextarg{#1}}{}}
+\makeatother
+
+% some computability/toc/complexity symbols
+\DeclareMathOperator{\program}{\refdef[blk:def-program]{\mathscr{P}}} % symbol for a program
+\DeclareMathOperator{\numedcfunc}{\refdef[blk:def-std-program-numbering]{\varphi}} % numbered computable function symbol
+\DeclareMathOperator{\cfunc}{\refdef[blk:not-comp-func]{\psi}} % computable function symbol
+\DeclarePairedDelimiter{\godelpair}{{\refdef[blk:def-pairing-func-1]{\langle}}}{{\refdef[blk:def-pairing-func-1]{\rangle}}}  % godel number pairing notation
+\newcommand{\godelpairl}{\refdef[blk:eq-pairing-function-3]{l}} % left number of a godel pair
+\newcommand{\godelpairr}{\refdef[blk:eq-pairing-function-4]{r}} % right number of a godel pair
+\DeclarePairedDelimiter{\Scoding}{{\refdef[blk:blk-S-program-encoding]{\langle}}}{{\refdef[blk:blk-S-program-encoding]{\rangle}}}
+\newcommand{\coded}{\Scoding}
+\newcommand{\compproj}{\refdef[blk:blk-mu-recursive-func-schema-3]{\pi}}
+\newcommand{\langS}{\refdef[blk:blk-S-lang]{\mathscr{S}}}
+\newcommand{\turingreduceo}[2]{#1 \operatorname{\refdef[blk:def-turing-reduc]{\le_1}} #2}
+\newcommand{\turingreducem}[2]{#1 \operatorname{\refdef[blk:def-turing-reduc]{\le_m}} #2}
+\newcommand{\turingreduce}[2]{#1 \operatorname{\refdef[blk:def-turing-reduc]{\le}} #2}
+\newcommand{\turingreduc}{\operatorname{\refdef[blk:def-turing-reduc]{\le}}}
+\newcommand{\turingreducep}[2]{#1 \operatorname{\refdef[blk:def-poly-reduc]{\le_p}} #2}
+\newcommand{\turingreducel}{\operatorname{\refdef[blk:def-log-reduc]{\le_l}}}
+\newcommand{\ereduce}{\operatorname{\refdef[blk:def-turing-reduc]{\le}}}
+\newcommand{\ccreduce}{\operatorname{\refdef[blk:def-reduc-rect]{\le_{cc}}}}
+\DeclareMathOperator{\machlang}{\refdef[blk:blk-mach-lang]{\mathsf{L}}}
+\DeclareMathOperator{\proglang}{\refdef[blk:blk-prog-lang]{\mathsf{L}}}
+\DeclareMathOperator{\univmach}{\refdef[blk:blk-S-uni-mach]{\mathscr{U}}}
+\NewDocumentCommand\albet{o}{\refdef[blk:def-alphabet]{\IfNoValueTF{#1}{\Sigma}{#1}}} % alphabet symbol
+\newcommand{\albt}[1]{\set{#1}}
+\newcommand{\fordset}{\refdef[blk:1724262093.0556488]{\omega}} % the set of all finite ordinals
+\newcommand{\compW}{\refdef[blk:not-comp-W]{\compclass{W}}}
+\newcommand{\compK}{\refdef[blk:not-comp-K]{\compclass{K}}}
+\newcommand{\compKo}{\refdef[blk:not-comp-K0]{\compclass{K0}}}
+\newcommand{\compTot}{\refdef[blk:def-comp-tot]{\compclass{Tot}}} % set of total computable functions
+\newcommand{\compRE}{\refdef[blk:def-recur-enum]{\compclass{RE}}} % set of recursively enumerable sets
+\newcommand{\compre}{\compRE}
+\newcommand{\compcoRE}{\refdef[blk:def-corecur-enum]{\compclass{co-RE}}}
+\newcommand{\compN}{\refdef[blk:not-omega-natural-numbers]{\omega}}
+\newcommand{\compR}{\refdef[blk:def-comp-set]{\compclass{R}}} % set of recursive sets
+\newcommand{\compr}{\compR}
+\newcommand{\turmach}{\refdef[blk:def-tur]{\mathscr{M}}} % turing machine
+\newcommand{\polylangs}{\refdef[blk:def-polylang]{\compxclass{P}}} % \refdef[blk:20240308T125435]{polynomial time decidable languages}
+\newcommand{\npolylangs}{\refdef[blk:def-np]{\compxclass{NP}}}
+% aliases for the 2 commands above
+\newcommand{\compP}{\polylangs}
+\newcommand{\compp}{\polylangs}
+\newcommand{\compNP}{\npolylangs}
+\newcommand{\compnp}{\npolylangs}
+\newcommand{\compSTP}{\refdef{STP}}
+\newcommand{\albetstar}[1]{{#1}^{\refdef[blk:def-kleenestar]{*}}} % kleene closure of an alphabet
+\newcommand{\bigoh}{\refdef[blk:def-bigo]{\mathscr{O}}} % big o
+\newcommand{\bigth}{\refdef[blk:def-bigo]{\Theta}}
+\newcommand{\bigom}{\refdef[blk:def-bigo]{\Omega}}
+\newcommand{\litoh}{\refdef[blk:def-bigo]{o}}
+\newcommand{\litth}{\refdef[blk:def-bigo]{\theta}}
+\newcommand{\litom}{\refdef[blk:def-bigo]{\omega}}
+\newcommand{\langconcat}{\mathrel{\refdef[blk:def-langconcat]{\cdot}}} % matrix product
+\newcommand{\emptytrans}{\refdef[blk:blk:1704361386]{\varepsilon}}
+\newcommand{\emptystr}{\refdef[blk:1700420189]{\varepsilon}}
+\newcommand{\automatontrans}[2]{\mathrel{\refdef[blk:tat-dfa-config]{\sststile{#1}{#2}}}}
+\newcommand{\ppoly}{\refdef[blk:def-ppoly]{\langname{P}_{/\langname{poly}}}}
+\newcommand{\csize}{\refdef[blk:def-bool-circ-class]{\mathsf{CSize}}}
+\newcommand{\cdepth}{\refdef[blk:def-bool-circ-class]{\mathsf{CDepth}}}
+\newcommand{\coNP}{\refdef[blk:def-conp]{\compxclass{coNP}}}
+\newcommand{\compconp}{\coNP}
+\newcommand{\compdtime}{\refdef[blk:def-dtime]{\compxclass{DTIME}}}
+\newcommand{\compntime}{\refdef[blk:def-ntime]{\compxclass{NTIME}}}
+\newcommand{\compEXP}{\compxclass{EXP}}
+\newcommand{\compexp}{\compEXP}
+\newcommand{\albetpow}[2]{{#1}^{#2}} % the power of an alphabet (set of strings of specific length whose symbols are in the alphabet)
+\newcommand{\symbolpow}[2]{{#1}^{#2}} % a symbol repeated
+\newcommand{\repcomp}[2]{{#1}^{#2}} % repeated composition of a function
+\newcommand{\fcsize}{\refdef[blk:not-fcsize]{\mathsf{FCSize}}}
+\newcommand{\fcdepth}{\refdef[blk:not-fcdepth]{\mathsf{FCDepth}}}
+\newcommand{\ffcdepth}{\refdef[blk:not-ffcdepth]{\mathsf{BFDepth}}}
+\newcommand{\ffcsize}{\leafsize}
+\newcommand{\bfuncs}{\refdef[blk:not-bfuncs]{\mathbb{B}}}
+\newcommand{\bfuncshat}{\refdef[def-bool-std-basis]{\hat{\mathcal{B}}}}
+\newcommand{\bfuncsbounded}{\refdef[blk:def-bool-std-basis]{\mathcal{B}_0}}
+\newcommand{\bfuncsunbounded}{\refdef[blk:def-bool-std-basis]{\mathcal{B}_1}}
+\newcommand{\boolmatrprod}{\refdef[def-bool-matr-prod]{\mathsf{BMM}}}
+\newcommand{\bcirc}[1][C]{\refdef[blk:def-bool-circ]{#1}}
+\newcommand{\bsete}{\set{0,1}} % the set of binary numbers, "e" for explicit, "b" for boolean
+\newcommand{\bset}{\refdef{\mathcal{B}}} % the set of binary numbers, "e" for explicit, "b" for boolean
+\newcommand{\leafsize}{\refdef[blk:not-leafsize]{\mathsf{LeafSize}}}
+\newcommand{\implics}{\refdef[blk:def-implicant]{\mathsf{I}}} % implicants
+\newcommand{\pimplics}{\refdef[blk:def-implicant-p]{\mathsf{PI}}}
+\newcommand{\compNC}{\refdef[blk:def-nc]{\compxclass{NC}}}
+\newcommand{\csizedepth}{\refdef[blk:def-bool-circ-class]{\mathsf{Size{-}Depth}}}
+\newcommand{\fsiz}{\refdef[blk:not-bool-circ-class]{\mathsf{FSize}}}
+\newcommand{\fdepth}{\refdef[blk:not-bool-circ-class]{\mathsf{FDepth}}}
+\newcommand{\fsizedepth}{\refdef[blk:not-bool-circ-class]{\mathsf{FSize{-}Depth}}}
+\newcommand{\cunbsizedepth}{\refdef[blk:not-bool-circ-class]{\mathsf{UnbSize{-}Depth}}}
+\newcommand{\compAC}{\refdef[blk:def-ac]{\compxclass{AC}}}
+\newcommand{\compACC}{\refdef[blk:def-acc]{\compxclass{ACC}}}
+\newcommand{\tildoh}{\tilde\bigoh}
+\newcommand{\boolblkcompose}{\mathop{\refdef[blk:def-bool-blk-compose]{\diamond}}}
+\newcommand{\booldist}{\refdef[blk:def-bool-dist]{\mathsf{dist}}}
+\newcommand{\compACp}{\refdef[blk:def-compacp]{\compAC^0[\parity]}}
+\newcommand{\compACz}{\compAC^0}
+\newcommand{\thresh}{\refdef[blk:def-thresh]{\mathsf{Th}}}
+\newcommand{\majo}{\refdef[blk:def-bool-func-sym]{\mathsf{Maj}}}
+\newcommand{\bigoheq}{\approx}
+\newcommand{\compTC}{\refdef[blk:def-tc]{\compxclass{TC}}}
+\newcommand{\compsat}{\refdef[blk:1718023728.5033107]{\langname{SAT}}}
+\newcommand{\compdspace}{\refdef[blk:def-space]{\compxclass{DSPACE}}}
+\newcommand{\dspace}{\compdspace}
+\newcommand{\compnspace}{\refdef[blk:def-space]{\compxclass{NSPACE}}}
+\newcommand{\nspace}{\compnspace}
+\newcommand{\comppspace}{\refdef[blk:def-pspace]{\compxclass{PSPACE}}}
+\newcommand{\pspace}{\comppspace}
+\newcommand{\compnpspace}{\refdef[blk:def-pspace]{\compxclass{NPSPACE}}}
+\newcommand{\npspace}{\compnpspace}
+\newcommand{\complspace}{\refdef[blk:def-lspace]{\compxclass{L}}}
+\newcommand{\lspace}{\complspace}
+\newcommand{\compnlspace}{\refdef[blk:def-lspace]{\compxclass{NL}}}
+\newcommand{\compnl}{\compnlspace}
+\newcommand{\nlspace}{\compnlspace}
+\newcommand{\proto}{\refdef[blk:def-proto]{\Pi}}
+\newcommand{\booldisj}{\refdef[blk:def-disj-func]{\mathsf{Disj}}}
+\newcommand{\protorect}{\refdef[blk:lem-cc-1]{R}}
+\newcommand{\dcomm}{\refdef[blk:def-comm-comp]{\mathsf{CC}}} % deterministic communication complexity
+% \newcommand{\ncomm}{}
+\newcommand{\protolen}[1]{\refdef[blk:def-proto-len]{\|#1\|}}
+\newcommand{\booleq}{\refdef[blk:def-booleq]{\texttt{EQ}}}
+\newcommand{\boolgt}{\texttt{GT}}
+\newcommand{\boolfrank}{\refdef[blk:def-boolrank]{\text{rank}}}
+\newcommand{\boolfmat}{\refdef[blk:dum-comm-10]{M}}
+\newcommand{\protopartnum}{\refdef[blk:def-proto-cover.1]{C^P}}
+\newcommand{\boolfpartnum}{\refdef[blk:def-proto-cover.2]{C^D}}
+\newcommand{\boolfcovnum}{\refdef[blk:def-proto-cover.3]{C}}
+% \newcommand{\boolfcovnumz}[1]{\refdef[blk:def-proto-cover.4]{C^{#1}}}
+\NewDocumentCommand{\boolfcovnumz}{g}{%
+  \IfValueTF{#1}{
+    \refdef{C}^{#1}
+  }{\refdef{C}^z}
+}
+\newcommand{\dstconn}{\refdef[blk:def-dstconn]{\langname{DSTCONN}}}
+\newcommand{\tqbf}{\refdef[blk:def-tqbf]{\langname{TQBF}}}
+\newcommand{\compco}[1]{\langname{co}{-}{#1}}
+\newcommand{\conlspace}{\compco\nlspace}
+\newcommand{\composat}{\refdef[blk:def-2sat]{\langname{2SAT}}}
+\newcommand{\comptsat}{\refdef[blk:def-3sat]{\langname{3SAT}}}
+\newcommand{\ncommo}{\refdef[blk:def-ncomm]{N^1}}
+\newcommand{\ncommz}{\refdef[blk:def-ncomm]{N^0}}
+\newcommand{\ncomm}{\refdef[blk:def-ncomm]{N}}
+\newcommand{\polyhl}[1]{\refdef[blk:def-polyh]{\Sigma_{#1}^{p}}}
+\newcommand{\polyhcol}[1]{\refdef[blk:def-polyh]{\Pi_{#1}^{p}}}
+\newcommand{\polyh}{\refdef[blk:def-polyh]{\compxclass{PH}}}
+\newcommand{\compconl}{\compco{\compnlspace}}
+\newcommand{\compnexp}{\compxclass{NEXP}}
+\newcommand{\poly}{\operatorname{poly}}
+\newcommand{\commp}{\refdef[blk:def-comm-p]{\compxclass{P^{cc}}}}
+\newcommand{\commnp}{\refdef[blk:def-comm-p]{\compxclass{NP^{cc}}}}
+\newcommand{\commconp}{\refdef[blk:def-comm-p]{\compxclass{coNP^{cc}}}}
+\newcommand{\polylog}{\operatorname{polylog}}
+\newcommand{\boolneq}{\texttt{NEQ}}
+\newcommand{\boolsi}{\refdef[blk:def-boolsi]{\texttt{SI}}}
+\newcommand{\commbpp}{\refdef[blk:def-comm-p]{\compxclass{BPP^{cc}}}}
+\newcommand{\commrp}{\refdef[blk:def-comm-p]{\compxclass{RP^{cc}}}}
+\newcommand{\commrndcst}{\refdef[blk:def-comm-rnd-cst]{R}}
+\newcommand{\commdiscr}{\refdef[blk:def-comm-discr]{Disc}}
+\newcommand{\compbpp}{\refdef[blk:def-bpp]{\compxclass{BPP}}}
+\newcommand{\comprp}{\refdef[blk:def-rp]{\compxclass{RP}}}
+\newcommand{\compzpp}{\refdef[blk:def-zpp]{\compxclass{ZPP}}}
+\newcommand{\compip}{\refdef[blk:def-ip]{\compxclass{IP}}}
+\newcommand{\compdip}{\refdef{\compxclass{dIP}}}
+\newcommand{\compam}{\refdef[blk:def-comp-am]{\compxclass{AM}}}
+\newcommand{\compma}{\refdef[blk:def-comp-am]{\compxclass{MA}}}
+\newcommand{\nppoly}{\refdef[blk:def-nppoly]{\langname{NP}_{/\langname{poly}}}}
+\newcommand{\comppcp}{\refdef{\compxclass{PCP}}}
+\newcommand{\compmip}{\refdef{\compxclass{MIP}}}
+
+% some symbols for cryptography notation (Gen,Enc,Dec), and others
+\DeclareMathOperator{\Gen}{Gen}
+\DeclareMathOperator{\Enc}{Enc}
+\DeclareMathOperator{\Dec}{Dec}
+\DeclareMathOperator{\Sign}{Sign}
+\DeclareMathOperator{\Vrfy}{Vrfy}
+\DeclareMathOperator{\negl}{negl}
+\DeclareMathOperator{\cert}{cert}
+\newcommand{\privkexp}{\operatorname{PrivK}_{\mathcal{A},\Pi}^{\mathrm{eav}}}
+\newcommand{\sigexp}{\operatorname{Sig-Forge}_{\mathcal{A},\Pi}}
+
+\newcommand{\smallspace}{\hspace{5pt}}
+
+% symbol modifications?
+\renewcommand{\emptyset}{\varnothing}
+
+% other macros/symbols
+\newcommand{\nrange}[1]{[#1]} % [n] to denote 0,1,...,n (was this ever relevant?! probably not.)
+\newcommand{\brange}[1]{[#1]} % [n] to denote 1,...,n (i found this notation in several books, including \ref{blk:1731676381.9014068})
+\newcommand{\equivrel}{\mathrel{\refdef[blk:def-equiv-relation]{\sim}}}
+\newcommand{\fcomp}{\mathrel{\refdef[blk:def-func-comp]{\circ}}}
+
+% some symbols for relational algebra
+\def\ojoin{\setbox0=\hbox{$\bowtie$}%
+  \rule[-.02ex]{.25em}{.4pt}\llap{\rule[\ht0]{.25em}{.4pt}}}
+\def\leftouterjoin{\mathbin{\ojoin\mkern-5.8mu\bowtie}}
+\def\rightouterjoin{\mathbin{\bowtie\mkern-5.8mu\ojoin}}
+\def\fullouterjoin{\mathbin{\ojoin\mkern-5.8mu\bowtie\mkern-5.8mu\ojoin}}
+
+% some symbols for machine learning
+\DeclareMathOperator{\actfunc}{\refdef[blk:20230503T000820]{\phi}} % to denote activation functions
+
+% lst
+\definecolor{Brown}{cmyk}{0,0.81,1,0.60}
+\definecolor{OliveGreen}{cmyk}{0.64,0,0.95,0.40}
+\definecolor{CadetBlue}{cmyk}{0.62,0.57,0.23,0}
+\definecolor{lightlightgray}{gray}{0.9}
+\lstset{
+  language=C,                             % Code langugage
+  basicstyle=\ttfamily,                   % Code font, Examples: \footnotesize, \ttfamily
+  keywordstyle=\color{OliveGreen},        % Keywords font ('*' = uppercase)
+  commentstyle=\color{gray},              % Comments font
+  numbers=left,                           % Line nums position
+  numberstyle=\tiny,                      % Line-numbers fonts
+  stepnumber=1,                           % Step between two line-numbers
+  numbersep=5pt,                          % How far are line-numbers from code
+  backgroundcolor=\color{lightlightgray}, % Choose background color
+  tabsize=2,                              % Default tab size
+  captionpos=t,                           % Caption-position = bottom
+  breaklines=true,                        % Automatic line breaking?
+  breakatwhitespace=false,                % Automatic breaks only at whitespace?
+  showspaces=false,                       % Dont make spaces visible
+  showtabs=false,                         % Dont make tabls visible
+  % columns=flexible,                       % Column format
+  morekeywords={__global__, __device__},   % CUDA specific keywords
+  showstringspaces=false,                 % dont show spaces in strings
+  frame=shadowbox,
+}
+% so that latex doesnt complain about these not being languages
+\lstdefinelanguage{sage}{}
+\lstdefinelanguage{json}{}
+\lstdefinelanguage{mongo}{}
+\lstdefinelanguage{powershell}{}
+\lstdefinelanguage{text}{}
+
+% environments like definition for special blocks, some of them are defined in beamer, so dont load them when the document class is beamer
+\makeatletter%
+\@ifclassloaded{beamer}%
+  {}%
+  {
+    \theoremstyle{definition}
+    \newtheorem{definition}{definition}
+    \newtheorem{my_example}{example}
+    % \newtheorem{assumption}{assumption}
+    % \counterwithin{my_example}{section}
+    % \counterwithin{my_example}{subsection}
+    % \counterwithin{definition}{section}
+    % \counterwithin{definition}{subsection}
+    \newtheorem{characteristic}{characteristic}
+    % \newtheorem{entailment}{entailment}
+    \newtheorem{corollary}{corollary}
+    % \newtheorem*{proof}{Proof}
+    \newtheorem*{proof_sketch}{proof sketch}
+    \newtheorem{lemma}{lemma}
+    \newtheorem{question}{question}
+    \newtheorem{remark}{remark}
+    % \newtheorem{subquestion}{subquestion}[question]
+    \newtheorem{note}{note}
+    \newtheorem{answer}{answer}
+    % \counterwithin{answer}{question}
+    % \counterwithin{answer}{subquestion}
+    % \newtheorem{step}{step}[answer]
+    \newtheorem{problem}{problem}
+    \newtheorem{solution}{solution}% [problem]
+    \newtheorem{subproblem}{subproblem}
+    \newtheorem{subproof}{subproof}
+    \newtheorem{proof2}{proof}
+    \newtheorem{proof_idea}{proof idea}
+    \newtheorem{task}{task}
+    \newtheorem{theorem}{theorem}
+    \newtheorem{axiom}{axiom}
+    \newtheorem{claim}{claim}
+    \newtheorem{proposition}{proposition}
+    \newtheorem{notation}{notation}
+    \newtheorem{my_part}{part}
+    \newtheorem{hint}{hint}
+    \newtheorem{exercise}{exercise}
+    \counterwithin{my_part}{solution}
+    % \newenvironment{note}
+    % {\begin{bclogo}[logo=\bcinfo, couleurBarre=orange, couleur=lightgray]{ note}}
+    %   {\end{bclogo}}
+    % \newenvironment{attention}
+    % {\begin{bclogo}[logo=\bcattention, couleurBarre=red, noborder=true,
+    %   couleur=red!15]{Important!}}
+    %   {\end{bclogo}}
+    % a dummy environment to group together "stuff"
+  }%
+\makeatother%
+% \newtheorem{thought}{thought}
+\newenvironment*{dummyenv}{}{}
+\newenvironment*{dummy}{}{}
+\newenvironment*{dummy2}{}{}
+\newenvironment{any}{}{}
+\newenvironment{literal}{}{}
+
+% the following snippet auto resizes images to fit properly
+% Determine if the image is too wide for the page.
+% \makeatletter
+% \def\ScaleIfNeeded{%
+% \ifdim\Gin@nat@width>\linewidth
+%   \linewidth
+% \else
+%   \Gin@nat@width
+% \fi
+% }
+%   \makeatother
+% %   Resize figures that are too wide for the page.
+%   \let\oldincludegraphics\includegraphics
+%   \renewcommand\includegraphics[2][]{%
+%   \oldincludegraphics[width=\ScaleIfNeeded]{#2}
+% }
+
+%  brace to group lines of code for a quote
+\newcommand*{\addbrace}[4]{%
+  \begin{tikzpicture}[overlay, remember picture]
+    \draw[decoration={brace,amplitude=0.5em}, decorate, thick]
+    ($(#3)!(#1.north)!($(#3)-(0,1)$)$) --
+    ($(#3)!(#2.south)!($(#3)-(0,1)$)$)
+    node[right=0.2cm, text width=5cm, pos=0.5, anchor=west] {#4};
+  \end{tikzpicture}
+}%
+
+% an algorithm environment to reduce algorithm2e boilerplate
+\newenvironment{alg} {
+  \begin{algorithm}[H]
+    \DontPrintSemicolon
+    \SetKwFunction{func}{My-Super-Function}
+    \SetKwProg{fn}{}{}{}
+    \SetKwRepeat{Do}{do}{while} % do-while macro
+  }
+  {\end{algorithm}}
+% alias to above with no line numbering
+\NewEnviron{algn} {{\LinesNumberedHidden\begin{alg}
+      \BODY
+    \end{alg}}}
+% more keywords for algorithm2e
+\SetKwInput{returns}{returns}
+\SetKwInput{args}{arguments}
+\SetKw{yield}{yield}
+\SetKw{from}{from}
+\SetKw{return}{return}
+\SetKw{goto}{goto}
+% get rid of annoying italics in for and if statements
+\SetArgSty{textnormal}%{textup}
+\SetFuncSty{textnormal}
+\SetFuncArgSty{textnormal}
+% \SetKwSty{mykwsty}
+% \SetDataSty{myvarsty}
+% search through https://ctan.ebinger.cc/tex-archive/macros/latex/contrib/algorithm2e/tex/algorithm2e.sty for the full list of commands
+
+% org-babel code evaluation results environment
+\newenvironment{results}
+{}
+{}
+
+% extensible \vec alternative from https://tex.stackexchange.com/questions/114321/extensible-vec-instead-of-overrightarrow
+\makeatletter
+\newcommand{\vect}[1]{%
+  \vbox{\m@th \ialign {##\crcr
+      \vectfill\crcr\noalign{\kern-\p@ \nointerlineskip}
+      $\hfil\displaystyle{#1}\hfil$\crcr}}}
+\def\vectfill{%
+  $\m@th\smash-\mkern-7mu%
+  \cleaders\hbox{$\mkern-2mu\smash-\mkern-2mu$}\hfill
+  \mkern-7mu\raisebox{-3.81pt}[\p@][\p@]{$\mathord\mathchar"017E$}$}
+
+% points to distinguish them from vectors (they are essentially the same thing but still)
+\newcommand{\ptvct}[1]{\refdef[blk:def-vec]{\brm{#1}}} % for a vector representing a point
+\newcommand{\vct}[1]{\refdef[blk:def-vec]{\vect{#1}}} % for a "vector with direction"
+\newcommand{\ptvctv}[1]{\begin{pmatrix} #1 \end{pmatrix}}
+\newcommand{\vctv}[1]{\begin{bmatrix} #1 \end{bmatrix}}
+\newcommand{\mat}[1]{\refdef[blk:def-matrix]{\brm{#1}}} % to denote matrix
+\newcommand{\idmat}{\refdef[blk:def-id-mat]{\mat{I}}} % to denote matrix
+% Insert a matrix. Usage: \matr{a & b \\ c & d} or \matr[<vertical spacing>]{a & b \\ c & d}, https://paulwintz.com/latex-macros/
+\newcommand{\matr}[2][1]{\begingroup
+  \renewcommand*{\arraystretch}{#1}
+  \begin{bmatrix}#2\end{bmatrix}
+\endgroup}
+\newcommand\matinv[1]{{#1}^{\refdef[blk:def-mat-inv]{-1}}}
+\newcommand{\tenselm}[2]{{#1}_{#2}} % to denote the element at specific indicies of a tensor
+% \NewDocumentCommand\coordvec{mmO{}}{\refdef[blk:def-vec-coord]{[#1]_{#2}^{#3}}} % coordinate vector
+\NewDocumentCommand\coordvec{mm}{\refdef[blk:def-vec-coord]{[#1]_{#2}}} % coordinate vector
+\NewDocumentCommand{\idtrans}{mm}{\refdef[blk:the-id-trans-mat]{[I]}_{#1}^{#2}} % for identity transformation, basis to basis
+\NewDocumentCommand{\transmat}{mmg}{% for general transformations?
+  \IfNoValueTF{#3}{%
+    [#1]_{#2}%
+  }{%
+    [#1]_{#2}^{#3}%
+  }%
+}
+\newcommand{\directsum}{\refdef[blk:def-direct-sum]{\oplus}}
+\newcommand{\colvecmat}[1]{[#1]} % column vectors placed into a matrix as its row vectors
+\newcommand{\basis}{\text{basis}}
+\newcommand{\funcmat}[1]{[#1]} % the matrix of a linear transformation
+\newcommand{\subspace}{\refdef[blk:def-vector-subspace]{\le}}
+\newcommand{\echelon}[1]{\refdef[blk:def-echelon]{\widetilde{#1}}}
+\newcommand{\sbasis}{\refdef[blk:def-basis-stand]{S}}
+\newcommand{\matsim}{\refdef[blk:def-matr-sim]{\sim}}
+\newcommand{\matspace}{\refdef{M}}
+\newcommand{\matspc}{\matspace}
+\newcommand{\leftmatfunc}[1]{L_{#1}} % from \ref{blk:1744291740.7674541}
+\newcommand{\eigval}{\refdef{\lambda}}
+\newcommand{\eigspc}{\refdef{E}}
+\newcommand{\matdiag}{\refdef{\operatorname{diag}}}
+\newcommand{\adjop}[1]{{#1}^{\refdef[blk:def-adjop]{\ast}}}
+\newcommand{\conjtr}[1]{{#1}^{\refdef[blk:def-conjug-tr]{H}}}
+
+% from https://tex.stackexchange.com/questions/329170/how-to-do-multiple-lines-within-brace
+\providecommand\given{} % ensure it exists
+\newcommand\givensymbol[1]{%
+  \nonscript\;\delimsize#1\allowbreak\nonscript\;\mathopen{}%
+}
+\DeclarePairedDelimiterX\Set[1]\{\}{%
+  \renewcommand\given{\givensymbol{\vert}}%
+  #1%
+}
+\newcommand{\set}{\Set}
+
+% for karnaughmap package
+\define@cmdkey{karnaughmap}{dontcare}[\phi]{} % change default dontcare symbol, doesnt work?
+
+% two-headed two-sided arrows
+% https://tex.stackexchange.com/questions/192709/does-twoheadleftrightarrow-exist-how-to-write-my-own
+\newcommand*{\twoheadleftrightarrow}{%
+  \twoheadleftarrow
+  \mathrel{\mkern-15mu}%
+  \twoheadrightarrow
+}
+\makeatletter
+\newcommand*{\xtwoheadleftrightarrow}[2][]{%
+  \ext@arrow 99{10}{10}\twoheadleftrightarrowfill@{#1}{#2}%
+}
+\newcommand*{\twoheadleftrightarrowfill@}{%
+  \arrowfill@\twoheadleftarrow\relbar\twoheadrightarrow
+}
+\makeatother
+
+% rewrite some macros from physics to avoid using the package itself
+\newcommand\pmqty[1]{\begin{pmatrix}#1\end{pmatrix}}
+\newcommand\bmqty[1]{\begin{bmatrix}#1\end{bmatrix}}
+\newcommand\vmqty[1]{\begin{vmatrix}#1\end{vmatrix}}
+
+% absolute value macro, |var|
+\delimitershortfall-1sp
+\newcommand\abs[1]{\left|#1\right|}
+\DeclarePairedDelimiter{\norm}{{\refdef[blk:def-norm]{\Vert}}}{{\refdef[blk:def-norm]{\Vert}}}
+\newcommand{\pnorm}[2][2]{{\refdef[blk:def-pnorm]{\Vert}#2\refdef[blk:def-pnorm]{\Vert}}_{#1}}
+\newcommand{\something}{\,\cdot\,}
+
+% dot above minus (for monus etc), https://tex.stackexchange.com/questions/114188/special-character-dot-over-dash
+\makeatletter
+\newcommand{\dotminus}{\mathbin{\text{\@dotminus}}}
+
+\newcommand{\@dotminus}{%
+  \ooalign{\hidewidth\raise1ex\hbox{.}\hidewidth\cr$\m@th-$\cr}%
+}
+\makeatother
+
+% for vertical equal signs, https://tex.stackexchange.com/questions/100538/vertical-equal-sign
+\newcommand{\verteq}{\rotatebox{90}{\(\,=\)}}
+\newcommand{\equalto}[2]{\underset{\scriptstyle\overset{\mkern4mu\verteq}{#2}}{#1}}
+
+% Z with a middle stroke, https://tex.stackexchange.com/questions/350453/z-with-a-stroke-through-it
+\newcommand{\Zstroke}{%
+  \text{\ooalign{\hidewidth\raisebox{0.2ex}{--}\hidewidth\cr$Z$\cr}}%
+}
+\newcommand{\zstroke}{%
+  \text{\ooalign{\hidewidth -\kern-.3em-\hidewidth\cr$z$\cr}}%
+}
+
+% for symbols similar to \uplus but with multiplication, https://tex.stackexchange.com/questions/417895/how-to-typeset-utimes-akin-to-uplus
+\newcommand\utimes{\mathbin{\ooalign{$\cup$\cr%
+   \hfil\raise0.42ex\hbox{$\scriptscriptstyle\times$}\hfil\cr}}}
+\newcommand\bigutimes{\mathop{\ooalign{$\bigcup$\cr%
+   \hfil\raise0.36ex\hbox{$\scriptscriptstyle\boldsymbol{\times}$}\hfil\cr}}}
+
+% some more macros for convenience
+\newcommand{\rnumset}{\refdef[blk:def-reals-set]{\mathbb{R}}} % for the set of real numbers
+\newcommand{\cnumset}{\refdef[blk:def-complex-set]{\mathbb{C}}} % for the set of complex numbers
+\newcommand{\qnumset}{\refdef[blk:def-rational-set]{\mathbb{Q}}} % for the set of rational numbers
+\newcommand{\znumset}{\refdef{\mathbb{Z}}} % for the set of integers
+\newcommand{\zpnumset}{\refdef{\mathbb{Z}^+}} % for the set of positive integers
+\newcommand{\nnumset}{\refdef[blk:def-natural-set-inf]{\mathbb{N}}} % for the set of naturals
+\newcommand{\vsfield}{\refdef[blk:def-F]{\mathbb{F}}} % for the "field" of a vector space which may stand for R or C (reals or complex nums)
+\NewDocumentCommand\vecspace{o}{\refdef[blk:not-vector-space]{\IfNoValueTF{#1}{V}{#1}}} % to denote some vector space V
+\NewDocumentCommand\duspace{o}{\refdef[blk:def-dual-space]{\IfNoValueTF{#1}{V'}{#1'}}}
+\newcommand{\linfuncsfromto}{\refdef[blk:not-linear-func-from-to]{\mathcal{L}}} % linear functions from one vector space onto another
+\newcommand{\bilinfuncsfromto}{\refdef[blk:def-bi-functional]{\mathcal{B}}} % bilinear functions from one vector space onto another
+\newcommand\transpose[1]{{#1}^{\refdef[blk:def-transpose]{\intercal}}}
+\newcommand\tensor[1]{\refdef[blk:def-tensor-inf]{\ptvct{#1}}}
+\newcommand\cntinfty{\refdef[blk:20240523T095610]{\aleph_0}} % \refdef[blk:20240523T095610]{countable infinity}
+\newcommand{\ffield}{\refdef[blk:1737722654.9790187]{\mathbb{Z}}}
+\newcommand{\polydeg}{\refdef[blk:def-multi-poly]{\operatorname{pdeg}}}
+\newcommand{\rbdeg}{\refdef[blk:def-bool-func-real-degree]{\mathsf{rbdeg}}} % real boolean degree
+\newcommand{\abdeg}{\refdef[blk:def-bool-func-real-degree]{\mathsf{abdeg}}} % approximate boolean degree
+\newcommand{\polyvecspace}{\refdef{P}}
+\newcommand{\trace}{\operatorname{tr}}
+\newcommand\matcol[2]{{#1}^{#2}}
+\newcommand\matrow[2]{{#1}_{#2}}
+\newcommand\matcel[3]{{#1}_{#2}^{#3}}
+\NewDocumentCommand{\charpoly}{gg}{%
+  \IfValueTF{#1}{
+    \IfValueTF{#2}{
+    \refdef{\Delta}_{#1}(#2)
+    }{\refdef{\Delta}_{#1}(\lambda)}
+  }{\refdef{\Delta}(\lambda)}%
+}
+\NewDocumentCommand{\minpoly}{gg}{%
+  \IfValueTF{#1}{
+    \IfValueTF{#2}{
+    \refdef[blk:def-minpoly]{m}_{#1}(#2)
+    }{\refdef[blk:def-minpoly]{m}_{#1}(x)}
+  }{\refdef[blk:def-minpoly]{m}(x)}%
+}
+\newcommand{\indset}{\refdef[blk:def-indset]{\langname{INDSET}}}
+\newcommand{\vsrestrict}[2]{{#1}\refdef[blk:def-vs-restrict]{|}_{#2}}
+\DeclareMathOperator{\realpart}{Re}
+\DeclareMathOperator{\imagpart}{Im}
+
+\ExplSyntaxOn
+    \NewDocumentEnvironment{myenv}{mmO{}o} % #1 is for type, #2 is for label, #3 for title, #4 is for caption
+     {
+      \par\noindent
+      \IfNoValueTF{#4}{\begin{myboxnocaption}[#2]{#1}{#3}}{\begin{myboxwithcaption}[#2]{#1}{#3}{#4}}
+      \ignorespaces
+     }
+     {
+      \par\noindent
+      \IfNoValueTF{#4}{\end{myboxnocaption}}{\end{myboxwithcaption}}
+      \ignorespaces
+     }
+\ExplSyntaxOff
+
+\newcounter{mycounter}
+% \newcounter{mycounter}[section] % Associate mycounter with section
+% \renewcommand{\themycounter}{\thesection.\arabic{mycounter}} % Reset numbering within section
+
+\makeatletter
+\newtcolorbox{myboxwithcaption}[4][]{
+  enhanced jigsaw,
+  breakable,
+  colback=white!80!gray,
+  colframe=white, fonttitle=\bfseries,
+  colbacktitle=white!50!gray,
+  coltitle=black,
+  boxed title style={colframe=black},
+  attach boxed title to top left={xshift=0.5cm,yshift=-4mm},
+  % before title={\refstepcounter{mycounter}},
+  before title={\refstepcounter{mycounter}\label{#1}}, % labeling here
+  title={#2 \themycounter~#3},
+  boxsep=0pt,
+  bottom=3mm,
+  left=3mm,
+  right=3mm,
+  top=5mm,
+  boxrule=1pt,
+  arc=0pt,
+  overlay={%
+    \tikzset{overlay=false} % to get proper spacing after the citation
+    \node[anchor=north,text width=\tcb@width-4\pgflinewidth-6mm,fill=white!50!gray,inner xsep=3mm,text=black]
+    (a) at ([yshift=2mm]frame.south) {citation: \textbf{#4}};
+    % \draw[line width=1pt] (a.north west) -- (a.south west) -| (a.north east);
+  }}
+\newtcolorbox{myboxnocaption}[3][]{
+  enhanced jigsaw,
+  breakable,
+  colback=white!80!gray,
+  colframe=white, fonttitle=\bfseries,
+  colbacktitle=white!50!gray,
+  coltitle=black,
+  boxed title style={colframe=black},
+  attach boxed title to top left={xshift=0.5cm,yshift=-4mm},
+  % before title={\refstepcounter{mycounter}},
+  before title={\refstepcounter{mycounter}\label{#1}}, % labeling here
+  title={#2 \themycounter~#3},
+  top=5mm,
+  % boxsep=0pt,
+  % bottom=3mm,
+  % left=3mm,
+  % right=3mm,
+  % top=3mm,
+  % boxrule=1pt,
+  % colframe=red,
+  % arc=0pt,
+  }
+\makeatother
+
+% function definition with domain and codomain and variable and value
+\newcommand{\funcdcv}[5]{%
+  #1 \colon #2 \to #3 = #4 \mapsto #5
+}
+% function definition with domain and codomain
+\newcommand{\funcdc}[3]{%
+  #1 \refdef[blk:def-func]{\colon} #2 \,\refdef[blk:def-func]{\to}\, #3
+}
+% function definition with variable and value
+\newcommand{\funcd}[3]{%
+  #1 \colon #2 \mapsto #3
+}
+% function as a variable and value without name
+\newcommand{\funcv}[2]{%
+  #1 \mapsto #2
+}
+% function as a name and value
+\newcommand{\funce}[2]{%
+  #1 = #2
+}
+
+% physics notations
+\NewDocumentCommand\force{o}{\IfNoValueTF{#1}{\vct{F}}{#1}}
+\NewDocumentCommand\pstn{o}{\IfNoValueTF{#1}{\ptvct{r}}{#1}}
+\NewDocumentCommand\vlcty{o}{\IfNoValueTF{#1}{\vct{v}}{#1}}
+\NewDocumentCommand\aclrn{o}{\IfNoValueTF{#1}{\vct{a}}{#1}}
+\NewDocumentCommand\tim{o}{\IfNoValueTF{#1}{t}{#1}}
+\NewDocumentCommand\Gconst{}{G}
+
+% denoting intervals, https://tex.stackexchange.com/questions/23640/how-to-input-open-intervals
+\NewDocumentCommand{\INTERVALINNARDS}{ m m }{
+    #1 {,} #2
+}
+\NewDocumentCommand{\interval}{ s m >{\SplitArgument{1}{,}}m m o }{
+    \IfBooleanTF{#1}{
+        \left#2 \INTERVALINNARDS #3 \right#4
+    }{
+        \IfValueTF{#5}{
+            #5{#2} \INTERVALINNARDS #3 #5{#4}
+        }{
+            #2 \INTERVALINNARDS #3 #4
+        }
+    }
+}
+
+\ExplSyntaxOn
+
+
+% flexible macro for sequences, https://tex.stackexchange.com/questions/254426/a-macro-for-typesetting-sequence-with-flexible-starting-index
+\NewDocumentCommand{\seq}{O{1}omm}
+ {
+  \IfNoValueTF{#2}
+   { \sayol_seq:nnn {#1} {#3} {#4} }
+   { \sayol_seq:nnnn { #1 } { #2 } { #3 } { #4 } }
+ }
+
+\cs_new_protected:Nn \sayol_seq:nnn
+ {
+  #2\sb{#1},
+  #2\sb
+   {
+    \regex_match:nnTF { \A\d*\Z } { #1 }
+     { \int_to_arabic:n { #1 + 1 } }
+     { #1 + 1 }
+   }
+  ,
+  \str_if_eq:nnTF { #3 } { * }
+   { \dotsc }
+   { \dots,#2\sb{#3} }
+ }
+
+\cs_new_protected:Nn \sayol_seq:nnnn
+ {
+  #3\sb{#1\sb{#2}},
+  #3\sb{#1\sb
+   {
+    \regex_match:nnTF { \A\d*\Z } { #2 }
+     { \int_to_arabic:n { #2 + 1 } }
+     { #2 + 1 }
+   }}
+  ,
+  \str_if_eq:nnTF { #3 } { * }
+   { \dotsc }
+   { \dots,#3{\sb{#1\sb{#4}}} }
+ }
+
+\ExplSyntaxOff
+
+% general macro for quantifiers that enforces parentheses around the final expression
+\NewDocumentCommand{\quantifier}{m m m}{%
+  \ensuremath{%
+    #1\, #2 \,. \, \left( #3 \right)
+  }%
+}
+
+% Specific quantifiers
+\NewDocumentCommand{\forallx}{m m}{\quantifier{\forall}{#1}{#2}}
+\NewDocumentCommand{\existsx}{m m}{\quantifier{\exists}{#1}{#2}}
+\NewDocumentCommand{\existsunique}{m m}{\quantifier{\exists!}{#1}{#2}}
+
+% \boxslash equivalent with backslash
+\newcommand{\boxbackslash}{%
+  \mathrel{\tikz[baseline=-0.5ex]{%
+    \draw (0,0) rectangle (0.6em,0.6em);
+    \draw (0.6em,0) -- (0,0.6em);
+  }}%
+}

@@ -1,0 +1,56 @@
+% configs for usage in "private" notes
+
+% reduce margins (if not beamer)
+\makeatletter%
+\@ifclassloaded{beamer}%
+  {}%
+  {\usepackage[margin=0.2in]{geometry}}%
+\makeatother%
+
+% https://latexcolor.com/
+\definecolor{bistre}{rgb}{0.24, 0.17, 0.12}
+\definecolor{darkgreen}{rgb}{0.0, 0.55, 0.1}
+\definecolor{darkorange}{rgb}{0.688039215686, 0.309411764706, 0.078431372549}
+% alternative to \hyperref to refer to a symbols definition/source using blk
+\renewcommand{\refdef}[2][]{%
+  \special{dvisvgm:raw <g data-ref='#1' class='fancy-button' pointer-events="bounding-box">}
+  \textcolor{darkorange}{\hyperref[#1]{#2}}
+  \special{dvisvgm:raw </g>}
+}
+
+% these font settings work very well atleast
+% \usepackage{fontspec}
+% \usepackage{txfonts}
+
+\ifLuaTeX
+  % to fix some errors with unicode-math where some symbols cannot be found
+  % \renewcommand\DeclareMathOperator\newcommand
+  % \renewcommand\operatorname[1]{\,#1\,}
+
+  % \usepackage[utf8]{inputenc}
+  % \usepackage{unicode-math}
+  % \newcommand\brm[1]{\symbf{#1}}
+
+  % \setmainfont{Linux Libertine O}
+  % \setmainfont{XITS}
+  % \setmathfont{XITS Math}
+  % \setmainfont{TeX Gyre Pagella}
+
+  % good looking, symbols are more handwritten-like
+  % \setmainfont{GFS Neohellenic}
+  % \setmathfont{GFS Neohellenic Math}
+
+  % needed for some of the mathastext fonts below
+  % \usepackage[T1]{fontenc}
+
+  % the following cursive fonts are very impractical
+
+  % cursive 1
+  % \usepackage[default]{frcursive}
+  % \usepackage[eulergreek,noplusnominus,noequal,nohbar,nolessnomore,noasterisk]{mathastext}
+
+  % cursive 2, favorite
+  % \usepackage{aurical}
+  % \renewcommand{\rmdefault}{AuriocusKalligraphicus}
+  % \usepackage[symbolgreek]{mathastext}
+\fi

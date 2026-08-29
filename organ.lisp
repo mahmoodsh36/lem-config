@@ -116,7 +116,7 @@
       (concatenate
        'string
        cltpt/latex-previews:*latex-preview-preamble*
-       "\\usepackage{\\string~/.emacs.d/common}\\usepackage{\\string~/.emacs.d/private}"))
+       "\\usepackage{\\string~/.lem/common}\\usepackage{\\string~/.lem/private}"))
 
 ;; prevent transient popup for organ-mode
 (defmethod lem/transient:mode-transient-keymap ((mode organ/organ-mode::organ-mode))
