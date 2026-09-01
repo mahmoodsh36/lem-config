@@ -99,13 +99,7 @@
   "open the file of the roam node with ID and jump to its element."
   (let ((node (cltpt/roam:get-node-by-id (organ:current-roamer) id)))
     (if node
-        (let ((text-obj (cltpt/roam:node-text-obj node)))
-          (lem:switch-to-buffer
-           (lem:find-file-buffer (cltpt/roam:node-file node)))
-          (when text-obj
-            (lem:move-to-position
-             (lem:current-point)
-             (1+ (cltpt/base:text-object-begin-in-root text-obj)))))
+        (organ::open-roam-node node)
         (lem:message "no node with id ~A" id))))
 
 (led-key "f m" (cmd (organ-open-node-by-id "tbl-albums")))

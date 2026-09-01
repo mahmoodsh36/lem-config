@@ -184,7 +184,12 @@ listing, otherwise the file the buffer visits (the pdf in reader mode, etc)."
 (led-key "g" 'lem/grep:grep)
 (led-key "e" 'find-config)
 (led-key "l" 'reload-config-systems)
-(led-key "; r" 'lem:revert-buffer)
+(lem:define-command revert-buffer-and-reload-previews (does-not-ask-p) (:universal-nil)
+  "revert buffer and reload latex previews from cache (no recompile)."
+  (lem:revert-buffer does-not-ask-p)
+  (when (lem:mode-active-p (lem:current-buffer) 'organ/organ-mode:organ-latex-preview-mode)
+    (organ/organ-mode::sync-buffer-previews (lem:current-buffer))))
+(led-key "; r" 'revert-buffer-and-reload-previews)
 (led-key "; u" 'copy-current-file-path)
 
 ;; directory-mode keybindings
