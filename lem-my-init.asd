@@ -8,6 +8,7 @@
                (:file "main")
                (:file "constants")
                (:file "vi")
+               (:file "file-positions")
                (:file "cltpt")
                (:file "organ")
                (:file "theme")))
