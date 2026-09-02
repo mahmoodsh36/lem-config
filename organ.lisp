@@ -33,6 +33,8 @@
 ;; only show first instance of a repeated task
 (setf organ:*agenda-first-repeat-only* t)
 
+(setf organ:*roam-titles-include-id* t)
+
 (led-key
  "E"
  (cmd
