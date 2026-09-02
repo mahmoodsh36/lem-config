@@ -376,3 +376,9 @@ end, otherwise nil."
 ;; to the common prefix and then walking the list.
 (lem:define-key lem/completion-mode::*completion-mode-keymap*
   "Tab" 'completion-insert-focused-item)
+
+;; M-Return in prompt to take input as-is
+(lem:define-command prompt-execute-raw () ()
+  (lem/completion-mode:completion-end)
+  (lem/prompt-window::prompt-execute))
+(define-key lem/prompt-window::*prompt-mode-keymap* "M-Return" 'prompt-execute-raw)
