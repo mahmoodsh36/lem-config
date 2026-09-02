@@ -194,6 +194,9 @@ listing, otherwise the file the buffer visits (the pdf in reader mode, etc)."
 
 ;; directory-mode keybindings
 (undefine-key lem/directory-mode::*directory-mode-keymap* "Space")
+(undefine-key lem/directory-mode::*directory-mode-keymap* "g")
+(define-key lem/directory-mode::*directory-mode-keymap* "g g" 'lem-vi-mode/commands:vi-goto-first-line)
+(define-key lem/directory-mode::*directory-mode-keymap* "g r" 'lem/directory-mode::directory-mode-update-buffer)
 (define-key lem/directory-mode::*directory-mode-keymap* "-" 'lem/directory-mode::directory-mode-up-directory)
 
 (lem:define-command dir-open-external () ()
