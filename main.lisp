@@ -47,6 +47,8 @@
 ;; relative line numbers
 (lem/line-numbers:toggle-line-numbers)
 (setf lem/line-numbers:*relative-line* t)
+;; allow more completion candidates before truncating
+(setf lem/completion-mode::*limit-number-of-items* 1000)
 
 ;; buffer-related keys
 (define-command my-kill-current-buffer () ()
