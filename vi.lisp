@@ -122,6 +122,12 @@
    (or *home-dir*
        (error "couldnt get HOME_DIR or HOME env var"))))
 
+(lem:define-command open-downloads-dir () ()
+  (open-dir
+   (cltpt/file-utils:join-paths
+    *home-dir*
+    "Downloads")))
+
 (defun same-file-p (a b)
   (flet ((bare (x) (string-right-trim "/" (namestring x))))
     (string= (bare a) (bare b))))
@@ -178,7 +184,8 @@ listing, otherwise the file the buffer visits (the pdf in reader mode, etc)."
 (led-key "d t" 'open-volume-othermusic-dir)
 (led-key "d m" 'open-volume-music-dir)
 (led-key "d h" 'open-home-dir)
-(led-key "d w" 'open-work-dir)
+(led-key "d w" 'open-downloads-dir)
+(led-key "d W" 'open-work-dir)
 (led-key "f f" 'fp-find-file)
 (led-key "f n" 'open-nixos-flake)
 (led-key "g" 'lem/grep:grep)
