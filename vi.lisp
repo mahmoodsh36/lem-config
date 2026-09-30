@@ -6,6 +6,45 @@
 ;; case-insensitive `/` search
 (setf (lem-vi-mode/options:option-value "ignorecase") t)
 
+;; auto-clear search highlights when the cursor moves
+(defvar *search-highlight-keep-commands*
+  '(lem-vi-mode/commands:vi-search-forward
+    lem-vi-mode/commands:vi-search-backward
+    lem-vi-mode/commands:vi-search-next
+    lem-vi-mode/commands:vi-search-previous
+    lem-vi-mode/commands:vi-search-forward-symbol-at-point
+    lem-vi-mode/commands:vi-search-backward-symbol-at-point
+    lem/isearch:isearch-next
+    lem/isearch:isearch-prev
+    lem/isearch:isearch-next-highlight
+    lem/isearch:isearch-prev-highlight
+    lem/isearch:isearch-finish
+    lem/isearch:isearch-toggle-highlighting))
+
+(defvar *point-before-last-command* nil)
+
+(defun search-highlights-visible-p (buffer)
+  (and (not (mode-active-p buffer 'lem/isearch:isearch-mode))
+       (or (buffer-value buffer 'lem/isearch::isearch-redisplay-string nil)
+           (buffer-value buffer 'lem/isearch::isearch-overlays nil))))
+
+(defun maybe-clear-search-highlight ()
+  (let* ((buffer (current-buffer))
+         (here (list buffer
+                     (line-number-at-point (current-point))
+                     (point-charpos (current-point)))))
+    (when (and *point-before-last-command*
+               (not (equal here *point-before-last-command*))
+               (search-highlights-visible-p buffer)
+               (let ((cmd (ignore-errors (this-command))))
+                 (and (typep cmd 'primary-command)
+                      (not (member (command-name cmd)
+                                   *search-highlight-keep-commands*)))))
+      (lem/isearch:isearch-end))
+    (setf *point-before-last-command* here)))
+
+(add-hook *post-command-hook* 'maybe-clear-search-highlight)
+
 ;; vi-mode specific window keybindings
 (define-keys *window-keymap*
   ("l" 'lem-vi-mode/binds::vi-window-move-right)
