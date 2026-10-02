@@ -35,6 +35,25 @@
 
 (setf organ:*roam-titles-include-id* t)
 
+;; customize agenda states
+(setf cltpt/agenda::*agenda-seqs*
+      (list
+       (cltpt/agenda::make-state-sequence-desc
+        :name 'basic
+        :state-descs (list
+                      (cltpt/agenda::make-state-desc
+                       :name 'todo
+                       :is-terminal nil)
+                      (cltpt/agenda::make-state-desc
+                       :name 'done
+                       :is-terminal t)
+                      (cltpt/agenda::make-state-desc
+                       :name 'canceled
+                       :is-terminal t)
+                      (cltpt/agenda::make-state-desc
+                       :name 'cancelled
+                       :is-terminal t)))))
+
 (led-key
  "E"
  (cmd
