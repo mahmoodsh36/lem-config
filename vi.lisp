@@ -244,6 +244,8 @@ listing, otherwise the file the buffer visits (the pdf in reader mode, etc)."
 (define-key lem/directory-mode::*directory-mode-keymap* "g g" 'lem-vi-mode/commands:vi-goto-first-line)
 (define-key lem/directory-mode::*directory-mode-keymap* "g r" 'lem/directory-mode::directory-mode-update-buffer)
 (define-key lem/directory-mode::*directory-mode-keymap* "-" 'lem/directory-mode::directory-mode-up-directory)
+(define-key lem/directory-mode::*directory-mode-keymap* "s" lem/directory-mode/keybinds::*directory-mode-sort-keymap*)
+(define-key lem/directory-mode::*directory-mode-keymap* "S" 'lem/directory-mode::directory-mode-sort-files)
 
 (lem:define-command dir-open-external () ()
   ;; the pathname property lives on the two spaces at line start, not under the cursor
