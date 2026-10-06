@@ -125,6 +125,17 @@
 
 (led-key "f m" (cmd (organ-open-node-by-id "tbl-albums")))
 
+(lem:define-command open-todays-file () ()
+  "open a new timestamped daily organ file with the cursor on the title."
+  (let ((timestamp (organ/capture:unique-timestamp *daily-dir*)))
+    (organ/capture::capture-file
+     `(:dir ,*daily-dir*
+       :if-new ,(format nil "#+filetags: :daily:~%")
+       :entry ,(format nil "#+title: ~A%organ/capture::cursor" timestamp)
+       :filename ,(format nil "~A.org" timestamp)))))
+
+(led-key "a o" 'open-todays-file)
+
 (setf organ/organ-mode:*organ-latex-preview-auto* t)
 
 (setf cltpt/latex-previews:*latex-preview-preamble*
