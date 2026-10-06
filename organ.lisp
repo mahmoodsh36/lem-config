@@ -25,7 +25,27 @@
 #+date: %(organ/utils:format-timestamp)
 #+filetags: :note:
 #+identifier: %(organ/capture:unique-timestamp \"notes/\")"
-         :filename "%(organ/capture:unique-timestamp \"notes/\").org")))
+         :filename "%(organ/capture:unique-timestamp \"notes/\").org")
+        (:key #\t
+         :name "agenda todo"
+         :dir ,*notes-dir*
+         :if-new "#+title: agenda
+#+date: %(organ/utils:format-timestamp)
+#+filetags: :todo:"
+         :entry "
+* TODO %organ/capture::cursor"
+         :filename "%(lemetnal::organ-agenda-filename)")))
+
+(defun organ-file-for-id (id)
+  (let ((node (cltpt/roam:get-node-by-id (organ:current-roamer) id)))
+    (when node
+      (cltpt/roam:node-file node))))
+
+(defun organ-agenda-filename ()
+  (let ((filepath (organ-file-for-id "agenda")))
+    (if filepath
+        (cltpt/file-utils:file-basename filepath)
+        "agenda.org")))
 
 (add-hook *after-init-hook*
           (lambda () (organ/roam::start-roam-rescan)))
