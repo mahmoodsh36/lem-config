@@ -194,6 +194,8 @@
 (led-key "a >" 'open-next-daily-file)
 
 (led-key "a i" 'organ/organ-mode::organ-insert-timestamp)
+(led-key "a s" 'organ/organ-mode::organ-schedule)
+(led-key "a d" 'organ/organ-mode::organ-deadline)
 
 (setf organ/organ-mode:*organ-latex-preview-auto* t)
 
