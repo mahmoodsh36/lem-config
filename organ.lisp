@@ -188,9 +188,12 @@
   "open the daily file for the day after the current file's day."
   (open-daily-file (+ (daily-current-buffer-universal-time) seconds-per-day)))
 
+;; daily file keys
 (led-key "a o" 'open-todays-file)
 (led-key "a <" 'open-prev-daily-file)
 (led-key "a >" 'open-next-daily-file)
+
+(led-key "a i" 'organ/organ-mode::organ-insert-timestamp)
 
 (setf organ/organ-mode:*organ-latex-preview-auto* t)
 
