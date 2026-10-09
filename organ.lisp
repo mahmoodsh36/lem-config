@@ -145,16 +145,52 @@
 
 (led-key "f m" (cmd (organ-open-node-by-id "tbl-albums")))
 
+(defconstant seconds-per-day (* 24 60 60))
+
+(defun daily-date-string (universal-time)
+  (multiple-value-bind (sec minute hour day month year) (decode-universal-time universal-time)
+    (format nil "~4,'0D-~2,'0D-~2,'0D" year month day)))
+
+(defun daily-current-buffer-universal-time ()
+  (let ((base (ignore-errors (pathname-name (lem:buffer-filename (lem:current-buffer))))))
+    (or (ignore-errors
+          (when (and (stringp base)
+                     (>= (length base) 10)
+                     (char= (char base 4) #\-)
+                     (char= (char base 7) #\-))
+            (encode-universal-time
+             0
+             0
+             12
+             (parse-integer base :start 8 :end 10)
+             (parse-integer base :start 5 :end 7)
+             (parse-integer base :start 0 :end 4))))
+        (get-universal-time))))
+
+(defun open-daily-file (universal-time)
+  (let* ((date-string (daily-date-string universal-time))
+         (buffer (lem:find-file-buffer
+                  (cltpt/file-utils:join-paths *daily-dir* (format nil "~A.org" date-string)))))
+    (lem:switch-to-buffer buffer)
+    (when (string= (lem:buffer-text buffer) "")
+      (lem:insert-string (lem:current-point)
+                         (format nil "#+filetags: :daily:~%#+title: ~A" date-string)))))
+
 (lem:define-command open-todays-file () ()
-  "open a new timestamped daily organ file with the cursor on the title."
-  (let ((timestamp (organ/capture:unique-timestamp *daily-dir*)))
-    (organ/capture::capture-file
-     `(:dir ,*daily-dir*
-       :if-new ,(format nil "#+filetags: :daily:~%")
-       :entry ,(format nil "#+title: ~A%organ/capture::cursor" timestamp)
-       :filename ,(format nil "~A.org" timestamp)))))
+  "open todays daily file."
+  (open-daily-file (get-universal-time)))
+
+(lem:define-command open-prev-daily-file () ()
+  "open the daily file for the day before the current file's day."
+  (open-daily-file (- (daily-current-buffer-universal-time) seconds-per-day)))
+
+(lem:define-command open-next-daily-file () ()
+  "open the daily file for the day after the current file's day."
+  (open-daily-file (+ (daily-current-buffer-universal-time) seconds-per-day)))
 
 (led-key "a o" 'open-todays-file)
+(led-key "a <" 'open-prev-daily-file)
+(led-key "a >" 'open-next-daily-file)
 
 (setf organ/organ-mode:*organ-latex-preview-auto* t)
 
