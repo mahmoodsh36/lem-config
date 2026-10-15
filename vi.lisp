@@ -228,12 +228,16 @@ listing, otherwise the file the buffer visits (the pdf in reader mode, etc)."
           (lem:copy-to-clipboard string)
           (lem:message "copied: ~A" string)))))
 
+(lem:define-command open-messages-buffer () ()
+  (lem:switch-to-buffer (lem:make-buffer "*Messages*")))
+
 ;; keybindings for general commands using lead-key
 (led-key "x" 'lem-lisp-mode/eval::lisp-eval-defun)
 (led-key "s" 'lem-lisp-mode/eval::lisp-eval-string)
 (led-key "b s" 'select-buffer)
 (led-key "b k" 'my-kill-current-buffer)
 (led-key "b K" 'my-kill-current-buffer-and-window)
+(led-key "b m" 'open-messages-buffer)
 (led-key "d d" 'lem/directory-mode::find-file-directory)
 (led-key "d j" 'jump-to-file-directory)
 (led-key "d b" 'open-brain-dir)
