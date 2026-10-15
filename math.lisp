@@ -156,8 +156,8 @@ expects two operands: base and exponent."
        (multiple-value-bind (operands keywords)
            (split-args args)
          (cond
-           ((and (symbolp head) (assoc head *operator-dispatch*))
-            (funcall (cdr (assoc head *operator-dispatch*))
+           ((and (symbolp head) (assoc head *operator-dispatch* :test 'string=))
+            (funcall (cdr (assoc head *operator-dispatch* :test 'string=))
                      head
                      operands
                      keywords))
