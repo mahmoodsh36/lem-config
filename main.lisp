@@ -57,25 +57,12 @@
   (kill-buffer (current-buffer))
   (lem-core/commands/window:delete-active-window))
 
-;; update completion after backspace
-(define-command completion-backspace () ()
-  (ignore-errors
-    (delete-previous-char)
-    (ignore-errors
-      (lem/completion-mode::continue-completion
-       lem/completion-mode::*completion-context*))))
-
 (define-keys lem/completion-mode::*completion-mode-keymap*
-  ("Backspace" 'completion-backspace)
   ;; to make space not close completion in the minibuffer
   ("Space" (cmd
              (if (lem/prompt-window::current-prompt-window)
                  (lem/completion-mode::completion-self-insert)
-                 (lem/completion-mode::completion-insert-space-and-cancel))))
-  ("Return" (cmd
-              (lem/completion-mode::completion-select)
-              (when (lem/prompt-window::current-prompt-window)
-                (lem/prompt-window::prompt-execute)))))
+                 (lem/completion-mode::completion-insert-space-and-cancel)))))
 
 (define-command fp-find-file () ()
   "find-file with backspace bound to up-directory."
