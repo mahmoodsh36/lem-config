@@ -6,12 +6,10 @@
 ;; case-insensitive `/` search
 (setf (lem-vi-mode/options:option-value "ignorecase") t)
 
-;; auto-clear search highlights when the cursor moves
+;; auto-clear search highlights when the cursor moves, these search commands keep them
 (defvar *search-highlight-keep-commands*
   '(lem-vi-mode/commands:vi-search-forward
     lem-vi-mode/commands:vi-search-backward
-    lem-vi-mode/commands:vi-search-next
-    lem-vi-mode/commands:vi-search-previous
     lem-vi-mode/commands:vi-search-forward-symbol-at-point
     lem-vi-mode/commands:vi-search-backward-symbol-at-point
     lem/isearch:isearch-next
@@ -21,6 +19,15 @@
     lem/isearch:isearch-finish
     lem/isearch:isearch-toggle-highlighting))
 
+;; n/N bring cleared highlights back, as in vim
+(defvar *search-highlight-restore-commands*
+  '(lem-vi-mode/commands:vi-search-next
+    lem-vi-mode/commands:vi-search-previous))
+
+;; extensions that wrap these commands push their own entries here on load
+(defun search-highlight-restore-command-p (name)
+  (member name *search-highlight-restore-commands*))
+
 (defvar *point-before-last-command* nil)
 
 (defun search-highlights-visible-p (buffer)
@@ -28,22 +35,33 @@
        (or (buffer-value buffer 'lem/isearch::isearch-redisplay-string nil)
            (buffer-value buffer 'lem/isearch::isearch-overlays nil))))
 
-(defun maybe-clear-search-highlight ()
+(defun restore-search-highlights (buffer)
+  (when (and (boundp 'lem/isearch::*isearch-string*)
+             (plusp (length lem/isearch::*isearch-string*)))
+    (setf (buffer-value buffer 'lem/isearch::isearch-redisplay-string)
+          lem/isearch::*isearch-string*)
+    (lem/isearch::isearch-add-hooks)
+    (lem/isearch::isearch-redisplay-inactive buffer)))
+
+(defun update-search-highlight ()
   (let* ((buffer (current-buffer))
          (here (list buffer
                      (line-number-at-point (current-point))
-                     (point-charpos (current-point)))))
-    (when (and *point-before-last-command*
-               (not (equal here *point-before-last-command*))
-               (search-highlights-visible-p buffer)
-               (let ((cmd (ignore-errors (this-command))))
-                 (and (typep cmd 'primary-command)
-                      (not (member (command-name cmd)
-                                   *search-highlight-keep-commands*)))))
-      (lem/isearch:isearch-end))
+                     (point-charpos (current-point))))
+         (cmd (ignore-errors (this-command)))
+         (name (and (typep cmd 'primary-command) (command-name cmd))))
+    (cond ((null name))
+          ((search-highlight-restore-command-p name)
+           (unless (search-highlights-visible-p buffer)
+             (restore-search-highlights buffer)))
+          ((and *point-before-last-command*
+                (not (equal here *point-before-last-command*))
+                (search-highlights-visible-p buffer)
+                (not (member name *search-highlight-keep-commands*)))
+           (lem/isearch:isearch-end)))
     (setf *point-before-last-command* here)))
 
-(add-hook *post-command-hook* 'maybe-clear-search-highlight)
+(add-hook *post-command-hook* 'update-search-highlight)
 
 ;; vi-mode specific window keybindings
 (define-keys *window-keymap*
@@ -241,6 +259,8 @@ listing, otherwise the file the buffer visits (the pdf in reader mode, etc)."
 ;; directory-mode keybindings
 (undefine-key lem/directory-mode::*directory-mode-keymap* "Space")
 (undefine-key lem/directory-mode::*directory-mode-keymap* "g")
+(undefine-key lem/directory-mode::*directory-mode-keymap* "n")
+(undefine-key lem/directory-mode::*directory-mode-keymap* "p")
 (define-key lem/directory-mode::*directory-mode-keymap* "g g" 'lem-vi-mode/commands:vi-goto-first-line)
 (define-key lem/directory-mode::*directory-mode-keymap* "g r" 'lem/directory-mode::directory-mode-update-buffer)
 (define-key lem/directory-mode::*directory-mode-keymap* "-" 'lem/directory-mode::directory-mode-up-directory)
