@@ -11,4 +11,5 @@
                (:file "file-positions")
                (:file "cltpt")
                (:file "organ")
-               (:file "theme")))
+               (:file "theme")
+               (:file "math")))

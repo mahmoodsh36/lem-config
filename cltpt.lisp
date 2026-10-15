@@ -9,6 +9,7 @@
 
 (setf cltpt/base:*id-to-attach-dir-func* 'my-id-to-attach-dir)
 (setf cltpt/base:*enable-macros* t)
+(cltpt/zoo:init)
 
 (defun titles-from-alist (alist)
   (let ((res))
