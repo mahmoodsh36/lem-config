@@ -83,6 +83,16 @@
     (lem/completion-mode::completion-end)
     (ignore-errors (lem/prompt-window::prompt-completion))))
 
+;; lisp-mode shows eval results (M-:) as a sticky popup that skips *Messages*, keep them in *Messages2*
+(sb-ext:without-package-locks
+  (defun lem-lisp-mode/internal::display-message (control-string &rest format-arguments)
+    (let ((string (apply #'format nil control-string format-arguments)))
+      (with-open-stream (stream (make-buffer-output-stream
+                                 (buffer-end-point (make-buffer "*Messages2*"))))
+        (fresh-line stream)
+        (princ string stream))
+      (show-message string :timeout nil))))
+
 ;; keys to find files
 (define-command find-config () ()
   (find-file (concatenate 'string
