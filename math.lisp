@@ -217,21 +217,3 @@ expects two operands: base and exponent."
 (lisp-to-latex '("s" (oplus (matrix (1 2 3) (4 5 6)) (matrix (1 2 3) (4 5 6)) :infix t) 1))
 (lisp-to-latex '(+ (set 1 2 3)))
 (lisp-to-latex '(set-builder (x) ((= x 2) (= y 2))))
-
-(defgeneric math-expr-latex (obj operator operands keywords))
-
-(defclass matrix (math-expr)
-  ()
-  )
-
-(defmethod math-expr-latex ((obj matrix) operator operands properties)
-  (with-output-to-string (out)
-    (format out "\\begin{pmatrix}~%")
-    (loop for sublist in operands for i from 0
-          do (loop for entry in sublist for j from 0
-                   do (if (= j (1- (length sublist)))
-                          (format out " ~A" (lisp-to-latex entry))
-                          (format out " ~A &" (lisp-to-latex entry))))
-             (unless (= i (1- (length operands)))
-               (format out "\\\\~%")))
-    (format out "~%\\end{pmatrix}")))
