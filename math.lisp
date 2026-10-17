@@ -1,8 +1,26 @@
 (in-package :lemetnal)
 
+;; symbol remapping table
+(defvar *symbol-remap*
+  nil
+  "alist mapping symbols to their custom latex representations.")
+
+(defparameter *operator-dispatch*
+  '((+ . latex-addition)
+    (- . latex-subtraction)
+    (* . latex-multiplication)
+    (/ . latex-division)
+    (matrix . latex-matrix)
+    (vector . latex-vector)
+    (set . latex-set)
+    (set-builder . latex-set-builder)
+    (= . latex-equality)
+    (expt . latex-expt)))
+
 (defun latex-set (operator operands props)
   (with-output-to-string (out)
     (if (getf props :is-display)
+        ;; \set and other custom macros are from my common.sty
         (format out "\\set{~%")
         (format out "\\set*{~%"))
     (format out
@@ -165,23 +183,6 @@ expects two operands: base and exponent."
             (funcall head head operands keywords))
            (t (latex-default head operands keywords))))))
     (t (format nil "~A" expr))))
-
-;; symbol remapping table
-(defvar *symbol-remap*
-  nil
-  "alist mapping symbols to their custom latex representations.")
-
-(defparameter *operator-dispatch*
-  '((+ . latex-addition)
-    (- . latex-subtraction)
-    (* . latex-multiplication)
-    (/ . latex-division)
-    (matrix . latex-matrix)
-    (vector . latex-vector)
-    (set . latex-set)
-    (set-builder . latex-set-builder)
-    (= . latex-equality)
-    (expt . latex-expt)))
 
 ;; maybe we can write like #$(+ 1 1) instead of #($ '(+ 1 1))?
 ;; (defun read-dollar-macro (stream char)
