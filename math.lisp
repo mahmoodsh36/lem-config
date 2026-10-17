@@ -62,7 +62,7 @@ expects two operands: base and exponent."
 (defmethod text-object-export ((obj math-expr) backend)
   (pcase backend
     (latex
-     (list :text (math-expr-latex obj)
+     (list :text (lisp-to-latex (text-object-property obj :expr))
            :escape nil
            :recurse nil))
     ))
