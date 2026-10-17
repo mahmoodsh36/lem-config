@@ -355,18 +355,21 @@ end, otherwise nil."
       (append (call-next-method) (list *agenda-vi-normal-keymap*))
       (call-next-method)))
 
-(defun offsets-to-range (start-offset end-offset)
+(defun offsets-to-range (&optional start-offset end-offset)
   (when (and start-offset end-offset)
     (lem-vi-mode/core:make-range
      (organ/utils:char-offset-to-point (lem:current-buffer) start-offset)
      (organ/utils:char-offset-to-point (lem:current-buffer) end-offset))))
 
-;; test 'cip'
+;; test (% %) pair
 (lem-vi-mode/commands/utils:define-text-object-command change-in-test () () ()
-  (multiple-value-call
-      #'offsets-to-range
-    (lemetnal/utils:pair-inner-offsets '(cltpt/combinator:pair "(%" "%)"))))
-(define-key lem-vi-mode:*inner-text-objects-keymap* "p" 'change-in-test)
+  (let ((range (multiple-value-call
+                    #'offsets-to-range
+                  (lemetnal/utils:pair-inner-offsets '(cltpt/combinator:pair "(%" "%)")))))
+    (unless range
+      (error 'lem-vi-mode/core:text-object-abort))
+    range))
+(define-key lem-vi-mode:*inner-text-objects-keymap* "%" 'change-in-test)
 
 ;; override vi-change in the lem-vi-mode/commands package to fix:
 ;; 1. trailing whitespace bug (for all text objects)
