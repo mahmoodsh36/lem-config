@@ -251,7 +251,7 @@ listing, otherwise the file the buffer visits (the pdf in reader mode, etc)."
 (led-key "f n" 'open-nixos-flake)
 (led-key "g" 'lem/grep:grep)
 (led-key "e" 'find-config)
-(led-key "l" 'reload-config-systems)
+;; (led-key "l" 'reload-config-systems)
 (lem:define-command revert-buffer-and-reload-previews (does-not-ask-p) (:universal-nil)
   "revert buffer and reload latex previews from cache (no recompile)."
   (lem:revert-buffer does-not-ask-p)
