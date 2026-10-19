@@ -295,6 +295,14 @@ listing, otherwise the file the buffer visits (the pdf in reader mode, etc)."
 (defvar *organ-vi-normal-keymap* (lem:make-keymap :description '*organ-vi-normal-keymap*))
 (lem:define-key *organ-vi-normal-keymap* "Space x" 'organ/organ-mode::organ-ctrl-c-ctrl-c)
 (lem:define-key *organ-vi-normal-keymap* "Space a c" 'organ/agenda-mode::agenda-mode-change-task-state)
+
+;; rebind tab in vi normal mode to fold toggling
+(define-command vi-toggle-fold-at-point () ()
+  (if (lem:mode-active-p (lem:current-buffer) 'organ/organ-mode:organ-mode)
+      (organ/organ-mode::organ-dwim-tab)
+      (lem/language-mode:fold-toggle-at-point)))
+(define-key lem-vi-mode:*motion-keymap* "Tab" 'vi-toggle-fold-at-point)
+
 ;; make % work for some organ-mode elements
 (defvar *organ-block-types*
   '(or
