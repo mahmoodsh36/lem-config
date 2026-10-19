@@ -5,17 +5,51 @@
   nil
   "alist mapping symbols to their custom latex representations.")
 
-(defparameter *operator-dispatch*
-  '((+ . latex-addition)
-    (- . latex-subtraction)
-    (* . latex-multiplication)
-    (/ . latex-division)
-    (matrix . latex-matrix)
-    (vector . latex-vector)
-    (set . latex-set)
-    (set-builder . latex-set-builder)
-    (= . latex-equality)
-    (expt . latex-expt)))
+(defvar *math-operator-table*
+  (make-hash-table :test 'equal)
+  "operator name (string) -> renderer function (lambda (operator operands props) string).")
+
+(defun normalize-math-operator-name (op)
+  "unify symbols and strings so 'matrix and \"matrix\" hit one entry."
+  (string-downcase
+   (typecase op
+     (symbol (symbol-name op))
+     (string op)
+     (t (princ-to-string op)))))
+
+(defun register-math-op (name fn)
+  "register FN as the renderer for operator NAME."
+  (setf (gethash (normalize-math-operator-name name) *math-operator-table*) fn)
+  name)
+
+(defun find-math-op (name)
+  (gethash (normalize-math-operator-name name) *math-operator-table*))
+
+(defmacro define-math-op (name (op-var operands-var props-var) &body body)
+  "define and register a renderer for operator NAME in one form."
+  `(register-math-op ',name
+     (lambda (,op-var ,operands-var ,props-var)
+       ,@body)))
+
+(defvar *math-backend*
+  :latex
+  "active math rendering backend. bound dynamically per export.")
+
+(defun math-render (expr &optional props)
+  "render EXPR using the current *MATH-BACKEND*."
+  (ecase *math-backend*
+    (:latex (lisp-to-latex expr props))))
+
+(defun math-render-each (operands &optional props)
+  "render each operand with PROPS, returning a list of strings."
+  (mapcar
+   (lambda (x)
+     (math-render x props))
+   operands))
+
+(defun math-render-join (separator operands &optional props)
+  "render OPERANDS with PROPS and join the results with SEPARATOR."
+  (str:join separator (math-render-each operands props)))
 
 (defun latex-set (operator operands props)
   (with-output-to-string (out)
@@ -23,12 +57,7 @@
         ;; \set and other custom macros are from my common.sty
         (format out "\\set{~%")
         (format out "\\set*{~%"))
-    (format out
-            (str:join ", "
-                      (mapcar
-                       (lambda (arg)
-                         (lisp-to-latex arg))
-                       operands)))
+    (format out (math-render-join ", " operands props))
     (format out "~%}")))
 
 (defun latex-set-builder (operator operands props)
@@ -36,37 +65,21 @@
     (if (getf props :is-display)
         (format out "\\set{~%")
         (format out "\\set*{~%"))
-    (format out
-            (str:join ", "
-                      (mapcar
-                       (lambda (arg)
-                         (lisp-to-latex arg))
-                       (car operands))))
+    (format out (math-render-join ", " (car operands) props))
     (format out " \\given ")
-    (format out
-            (str:join ", "
-                      (mapcar
-                       (lambda (arg)
-                         (lisp-to-latex arg))
-                       (cadr operands))))
+    (format out (math-render-join ", " (cadr operands) props))
     (format out "~%}")))
 
 (defun latex-expt (operator operands props)
-  "convert an exponentiation expression to latex.
-expects two operands: base and exponent."
-  (if (= (length l) 2)
+  (if (= (length operands) 2)
       (format nil
               "{~A}^{~A}"
-              (lisp-to-latex (first operands))
-              (lisp-to-latex (second operands)))
+              (math-render (first operands) props)
+              (math-render (second operands) props))
       (error "exponentiation expects exactly two operands.")))
 
-(defun latex-equality (operator operands keywords)
-  (str:join " = "
-            (mapcar
-             (lambda (arg)
-               (lisp-to-latex arg))
-             operands)))
+(defun latex-equality (operator operands props)
+  (math-render-join " = " operands props))
 
 (defclass math-expr (text-object)
   ()
@@ -93,45 +106,44 @@ expects two operands: base and exponent."
         finally (return (values (subseq args 0 i)
                                 (subseq args i)))))
 
-(defun latex-vector (operator operands keywords)
+(defun latex-vector (operator operands props)
   (with-output-to-string (out)
     (format out "\\begin{pmatrix}~%")
     (dolist (entry operands)
-      (format out "~A\\\\ " (lisp-to-latex entry)))
+      (format out "~A\\\\ " (math-render entry props)))
     (format out "~%\\end{pmatrix}")))
 
-(defun latex-matrix (operator operands keywords)
-  (declare (ignore keywords))
+(defun latex-matrix (operator operands props)
   (with-output-to-string (out)
     (format out "\\begin{pmatrix}~%")
     (loop for sublist in operands for i from 0
           do (loop for entry in sublist for j from 0
                    do (if (= j (1- (length sublist)))
-                          (format out " ~A" (lisp-to-latex entry))
-                          (format out " ~A &" (lisp-to-latex entry))))
+                          (format out " ~A" (math-render entry props))
+                          (format out " ~A &" (math-render entry props))))
              (unless (= i (1- (length operands)))
                (format out "\\\\~%")))
     (format out "~%\\end{pmatrix}")))
 
-(defun latex-addition (operator operands keywords)
-  (str:join " + " (mapcar (lambda (x) (lisp-to-latex x)) operands)))
+(defun latex-addition (operator operands props)
+  (math-render-join " + " operands props))
 
-(defun latex-subtraction (operator operands keywords)
+(defun latex-subtraction (operator operands props)
   (format nil
           "~{~A~^-~}"
-          (mapcar (lambda (x) (lisp-to-latex x)) operands)))
+          (math-render-each operands props)))
 
-(defun latex-multiplication (operator operands keywords)
-  (str:join " \\cdot " (mapcar #'(lambda (x) (lisp-to-latex x)) operands)))
+(defun latex-multiplication (operator operands props)
+  (math-render-join " \\cdot " operands props))
 
-(defun latex-division (operand operands keywords)
+(defun latex-division (operator operands props)
   (if (= (length operands) 2)
-      (format nil (or (getf keywords :frac-style) "\\frac{~A}{~A}")
-              (lisp-to-latex (first operands))
-              (lisp-to-latex (second operands)))
+      (format nil (or (getf props :frac-style) "\\frac{~A}{~A}")
+              (math-render (first operands) props)
+              (math-render (second operands) props))
       (error "division expects exactly two operands.")))
 
-(defun latex-default (operator operands keywords)
+(defun latex-default (operator operands props)
   (let* ((op-name
            (cond
              ;; handle string operators directly
@@ -139,57 +151,69 @@ expects two operands: base and exponent."
              ;; default symbol-based lookup
              ((symbolp operator) (symbol-name operator))
              (t operator)))
-         (infix? (getf keywords :infix)))
+         (infix? (getf props :infix)))
     (cond
       (infix?
        (format nil
                "~A ~A ~A"
-               (lisp-to-latex (first operands))
+               (math-render (first operands) props)
                op-name
-               (lisp-to-latex (second operands))))
+               (math-render (second operands) props)))
       (t
        (format nil "\\operatorname{~A}\\left( ~A \\right)"
                op-name
-               (str:join ", "
-                         (mapcar (lambda (arg)
-                                   (lisp-to-latex arg))
-                                 operands)))))))
+               (math-render-join ", " operands props))))))
+
+(defun latex-render-number (n props)
+  (princ-to-string n))
+
+(defun latex-render-symbol (sym props)
+  (let ((remap (assoc sym *symbol-remap*)))
+    (if remap
+        (cdr remap)
+        (format nil "\\texttt{~A}" (string-downcase (symbol-name sym))))))
+
+(defun latex-render-atom (expr props)
+  (cond
+    ((numberp expr) (latex-render-number expr props))
+    ((symbolp expr) (latex-render-symbol expr props))
+    ((stringp expr) expr)
+    (t (format nil "~A" expr))))
+
+(defun math-render-atom (backend expr props)
+  "render atom EXPR for BACKEND."
+  (ecase backend
+    (:latex (latex-render-atom expr props))))
 
 ;; main conversion function
-(defun lisp-to-latex (expr)
+;; node-level keywords take precedence over INHERITED-PROPS from parents.
+(defun lisp-to-latex (expr &optional inherited-props)
   (cond
     ((atom expr)
-     (cond
-       ((numberp expr)
-        (princ-to-string expr))
-       ((symbolp expr)
-        (let ((remap (assoc expr *symbol-remap*)))
-          (if remap
-              (cdr remap)
-              (format nil "\\texttt{~A}" (string-downcase (symbol-name expr))))))
-       (t (format nil "~A" expr))))
+     (math-render-atom :latex expr inherited-props))
     ((listp expr)
      (let ((head (car expr))
            (args (cdr expr)))
        (multiple-value-bind (operands keywords)
            (split-args args)
-         (cond
-           ((and (symbolp head) (assoc head *operator-dispatch* :test 'string=))
-            (funcall (cdr (assoc head *operator-dispatch* :test 'string=))
-                     head
-                     operands
-                     keywords))
-           ((and (symbolp head) (fboundp head))
-            (funcall head head operands keywords))
-           (t (latex-default head operands keywords))))))
+         (let ((props (append keywords inherited-props)))
+           (let ((fn (find-math-op head)))
+             (if fn
+                 (funcall fn head operands props)
+                 (latex-default head operands props)))))))
     (t (format nil "~A" expr))))
 
-;; maybe we can write like #$(+ 1 1) instead of #($ '(+ 1 1))?
-;; (defun read-dollar-macro (stream char)
-;;   (declare (ignore char))
-;;   ;; read the next object, and quote it
-;;   (let ((obj (read stream t nil t)))
-;;     `(quote ,obj)))
+(register-math-op '+      #'latex-addition)
+(register-math-op '-      #'latex-subtraction)
+(register-math-op '*      #'latex-multiplication)
+(register-math-op '/      #'latex-division)
+(register-math-op 'matrix #'latex-matrix)
+(register-math-op 'vector #'latex-vector)
+(register-math-op 'set    #'latex-set)
+(register-math-op '=      #'latex-equality)
+(register-math-op 'expt   #'latex-expt)
+(register-math-op 'set-builder #'latex-set-builder)
+
 (defun read-dollar-macro (stream char)
   (let ((obj (read stream t nil t)))
     `(make-math-expr (quote ,obj))))
