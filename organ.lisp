@@ -65,6 +65,9 @@
                        :name 'todo
                        :is-terminal nil)
                       (cltpt/agenda::make-state-desc
+                       :name 'go
+                       :is-terminal nil)
+                      (cltpt/agenda::make-state-desc
                        :name 'done
                        :is-terminal t)
                       (cltpt/agenda::make-state-desc
