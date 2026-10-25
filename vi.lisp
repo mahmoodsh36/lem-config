@@ -147,6 +147,20 @@
                          (when r (invoke-restart r))))))
       (asdf:load-system "organ-mode" :force t))))
 
+(define-command load-cas (force) (:universal-nil)
+  (pushnew (concatenate 'string (my-getenv "WORK_DIR") "/cas/")
+           asdf:*central-registry*
+           :test #'equal)
+  (if force
+      (progn
+        (remhash "cas" asdf/system-registry:*immutable-systems*)
+        (asdf:clear-system "cas")
+        (asdf:load-system :cas :force t))
+      (asdf:load-system :cas))
+  (lem:message "cas loaded~@[ (forced)~]" force))
+
+(led-key "; s" 'load-cas)
+
 (lem:define-command open-brain-dir () ()
   (open-dir *brain-dir*))
 
