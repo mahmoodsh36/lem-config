@@ -147,17 +147,29 @@
                          (when r (invoke-restart r))))))
       (asdf:load-system "organ-mode" :force t))))
 
-(define-command load-cas (force) (:universal-nil)
+(defun %load-cas (force)
   (pushnew (concatenate 'string (my-getenv "WORK_DIR") "/cas/")
            asdf:*central-registry*
            :test #'equal)
-  (if force
-      (progn
-        (remhash "cas" asdf/system-registry:*immutable-systems*)
-        (asdf:clear-system "cas")
-        (asdf:load-system :cas :force t))
-      (asdf:load-system :cas))
-  (lem:message "cas loaded~@[ (forced)~]" force))
+  ;; optimization notes run to thousands of lines, and lisp autodoc rescans all repl output per keystroke
+  (handler-bind ((sb-ext:compiler-note #'muffle-warning))
+    (if force
+        (progn
+          (remhash "cas" asdf/system-registry:*immutable-systems*)
+          (asdf:clear-system "cas")
+          (asdf:load-system :cas :force t))
+        (asdf:load-system :cas)))
+  (format t "~&cas loaded~@[ (forced)~]~%" force))
+
+;; eval through the repl so the load runs on a micros worker (not the editor thread)
+;; and its compile output streams into the repl buffer.
+(define-command load-cas (force) (:universal-nil)
+  (lem-lisp-mode/internal::check-connection)
+  (pop-to-buffer (lem-lisp-mode/internal::ensure-repl-buffer-exist))
+  (lem-lisp-mode/internal::listener-eval
+   (if force
+       "(lemetnal::%load-cast)"
+       "(lemetnal::%load-cas nil)")))
 
 (led-key "; s" 'load-cas)
 
